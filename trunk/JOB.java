@@ -1,12 +1,10 @@
 
-public class JOB {
+public class JOB 
+{
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) 
 	{
-		System.out.println("Hello");
+		ConfigSettings.Init();			//read in configuration file settings
 	}
 
 }
