@@ -1,8 +1,8 @@
 package mapreducer;
 
-import ConfigSettings;
-import mapreducer.master.*;
-import mapreducer.simulator.*;
+import mapreducer.ConfigSettings;
+import mapreducer.Master.*;
+import mapreducer.Simulator.*;
 
 public class Main 
 {
@@ -20,8 +20,8 @@ public class Main
 		master = new Master();
 	    sim = new Simulator();
 	    
-	    sim.SetMasterRef(master);
+	    //sim.SetMasterRef(master);
 	    
-	    sim.Start();
+	    sim.run();
 	}
 }
