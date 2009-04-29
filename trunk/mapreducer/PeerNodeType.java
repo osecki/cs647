@@ -18,8 +18,17 @@ public class PeerNodeType
     	jobClient = new JobClient();
     	
     	p2pComms = new P2PCommsManager(this.hashCode());
-    	mrHandler = new MRProtocolHandler();
     	faultHealth = new FaultAndHealth();
+    	
+    	
+    	//Configure the MRProtocolHandler
+    	mrHandler = new MRProtocolHandler();
+    	mrHandler.SetNodeType(roleType);
+    	mrHandler.SetFaultAndHealthReference(faultHealth);
+    	mrHandler.SetJobClientReference(jobClient);
+    	mrHandler.SetMasterReference(master);
+    	mrHandler.SetP2PCommsManagerReference(p2pComms);
+    	mrHandler.SetWorkerReference(worker);
     }
     
     public void setRoleType(PeerNodeRoleType role)
