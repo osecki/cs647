@@ -9,7 +9,7 @@ import java.util.Properties;
 
 public class ConfigSettings
 {
-    public static int numWorkers;
+    public static int numNodes;
     public static boolean selfHealing;
     public static boolean selfOptimization;
 
@@ -27,8 +27,8 @@ public class ConfigSettings
                 FileInputStream in = new FileInputStream(f);
                 pro.load(in);
 
-                // load number of worker threads to spawn
-                numWorkers = Integer.parseInt(pro.getProperty("numWorkers"));
+                // load number of nodes to spawn
+                numNodes = Integer.parseInt(pro.getProperty("numNodes"));
 
                 // load flag to determine if we want to self heal
                 selfHealing = Boolean.parseBoolean(pro.getProperty("selfHealing"));
