@@ -6,7 +6,8 @@ public class JobClient extends Thread
 
     public JobClient()
     {
-
+    	//Set job client reference in handler
+    	mrHandler.SetJobClientReference(this);
     }
 
     public void SetMRProtocolHandlerRef(MRProtocolHandler reference)
