@@ -32,7 +32,8 @@ public class Simulator implements Runnable
 
     public void run()
     {
-    	runWorkerThreads();
+    	runWorkerThreads();						//spawn worker threads
+    	
     }
     
     private void runWorkerThreads()

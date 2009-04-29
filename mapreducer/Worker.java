@@ -21,9 +21,7 @@ public class Worker extends Thread
 
 	//Method that must be implemented to run worker as a thread
 	public void run() 
-	{
-		//To Do:   Sit in a loop process
-		
+	{	
 		while(true)
 		{
 			System.out.println("Worker Thread:  " + this.hashCode() + " is running");
