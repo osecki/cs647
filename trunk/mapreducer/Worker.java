@@ -1,6 +1,6 @@
 package mapreducer;
 
-public class Worker
+public class Worker extends Thread
 {
     /*
      * TODO THE BIG QUESTION...Do we want to run the worker as another thread so
@@ -12,11 +12,21 @@ public class Worker
 
     public Worker()
     {
-
     }
 
     public void SetMRProtocolHandlerRef(MRProtocolHandler reference)
     {
         mrHandler = reference;
     }
+
+	//Method that must be implemented to run worker as a thread
+	public void run() 
+	{
+		//To Do:   Sit in a loop process
+		
+		while(true)
+		{
+			System.out.println("Worker Thread:  " + this.hashCode() + " is running");
+		}
+	}
 }
