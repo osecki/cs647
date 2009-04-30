@@ -2,7 +2,8 @@ package mapreducer;
 
 public class JobClient extends Thread
 {
-    public MRProtocolHandler mrHandler;
+	//pass down mrHandler
+	MRProtocolHandler mrHandler;
 
     public JobClient()
     {
