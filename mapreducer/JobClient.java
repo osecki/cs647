@@ -7,20 +7,21 @@ public class JobClient extends Thread
 
     public JobClient()
     {
-    	//Set job client reference in handler
-    	mrHandler.SetJobClientReference(this);
     }
 
     public void SetMRProtocolHandlerRef(MRProtocolHandler reference)
     {
         mrHandler = reference;
+    
+    	//Set job client reference in handler
+    	mrHandler.SetJobClientReference(this);
     }
     
     public void run()
     {
     	while(true)
     	{
-    		System.out.println("Running Job Client");
+    		System.out.println("Job Client Thread:  " + this.hashCode() + " is running");
     	}
     }
 

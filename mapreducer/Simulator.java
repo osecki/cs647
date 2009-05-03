@@ -71,6 +71,10 @@ public class Simulator implements Runnable
         Enumeration<PeerNodeType> e = peerNodes.elements();
 
         while (e.hasMoreElements())
-            e.nextElement().run();       
+        {
+            e.nextElement().run();
+            System.out.println("****** ");
+            //System.out.println(e.nextElement().getRoleType());
+        }
     }
 }

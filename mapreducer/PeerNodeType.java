@@ -55,9 +55,11 @@ public class PeerNodeType
     	}
     	else if (roleType == PeerNodeRoleType.MASTER)
     	{    		
+    		master.start();
     	}
     	else if (roleType == PeerNodeRoleType.WORKER)
     	{
+    		worker.start();
     	}
     }
 }
