@@ -1,17 +1,56 @@
 package mapreducer;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.concurrent.SynchronousQueue;
 
 public class GlobalMessageQueue
 {
-    private SynchronousQueue<PeerNodeMessageType>[] msgQueue;
+    private static GlobalMessageQueue instance = null;
 
-    public GlobalMessageQueue(int numQueues)
+    // private SynchronousQueue<PeerNodeMessageType> newMsgQueue;
+
+    private Hashtable<Integer, SynchronousQueue<PeerNodeMessageType>> messageQueues;
+
+    public GlobalMessageQueue()
     {
-        // I'm thinking of have one queue for each peer node
-        // ## TODO:
-        msgQueue = (SynchronousQueue<PeerNodeMessageType>[]) new SynchronousQueue[numQueues];
 
+    }
+
+    /**
+     * Returns reference to the singleton
+     * 
+     * @return
+     */
+    public static GlobalMessageQueue GetInstance()
+    {
+        if (instance == null)
+        {
+            instance = new GlobalMessageQueue();
+        }
+        return instance;
+    }
+
+    /**
+     * 
+     * @param queID
+     */
+    public void CreateMessageQueue(int queID)
+    {
+        SynchronousQueue<PeerNodeMessageType> newMsgQueue;
+
+        newMsgQueue = new SynchronousQueue<PeerNodeMessageType>();
+
+        messageQueues.put(queID, newMsgQueue);
+    }
+
+    /**
+     * 
+     * @param queID
+     */
+    public void DestroyMessageQueue(int queID)
+    {
+        messageQueues.remove(queID);
     }
 
     /**
@@ -20,9 +59,10 @@ public class GlobalMessageQueue
      * @param nodeID
      * @return
      */
-    public PeerNodeMessageType GetNextMsg(int nodeID)
+    public PeerNodeMessageType GetNextMsg(int queID)
     {
-        return msgQueue[nodeID].poll();
+        return messageQueues.get(queID).poll();
+        // return msgQueue[queID].poll();
     }
 
     /**
@@ -33,7 +73,7 @@ public class GlobalMessageQueue
      */
     public void SendMsg(int destNodeID, PeerNodeMessageType msg)
     {
-        msgQueue[destNodeID].add(msg);
+        messageQueues.get(destNodeID).add(msg);
     }
 
     /**
@@ -43,9 +83,12 @@ public class GlobalMessageQueue
      */
     public void BroadcastMessage(PeerNodeMessageType msg)
     {
-        for (int i = 0; i < msgQueue.length; i++)
+        Enumeration<Integer> iterator = messageQueues.keys();
+
+        while (iterator.hasMoreElements())
         {
-            msgQueue[i].add(msg);
+            int queID = iterator.nextElement();
+            messageQueues.get(queID).add(msg);
         }
     }
 }

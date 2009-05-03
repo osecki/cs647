@@ -105,16 +105,27 @@ public class MRProtocolHandler
             case PeerNodeMessageType.MASTER_NODE_FAILED:
             {
                 // TODO: Need function in MRProtocolHandler class
+                if (nodeType == PeerNodeRoleType.WORKER)
+                {
+                    // Worker nodes are the only nodes that care about master
+                    // and will determine new master node.
+                }
                 break;
             }
             case PeerNodeMessageType.INITIATE_NEW_MASTER_PROTOCOL:
             {
                 // TODO: Need function in MRProtocolHandler class
+                if (nodeType == PeerNodeRoleType.WORKER)
+                {
+                    // Worker nodes are the only nodes that care about master
+                    // and will determine new master node.
+                }
                 break;
             }
             case PeerNodeMessageType.NEW_MASTER_NODE:
             {
                 // TODO: Need function in MRProtocolHandler class
+                UpdateMasterNode(msg.masterNodeID);
                 break;
             }
             case PeerNodeMessageType.MASTER_NODE_QUERY:
@@ -134,7 +145,8 @@ public class MRProtocolHandler
             }
             case PeerNodeMessageType.MASTER_NODE_QUERY_REPLY:
             {
-                // TODO: Need function in JobClient class
+                // On the reply, set the master node
+                UpdateMasterNode(msg.masterNodeID);
                 break;
             }
             case PeerNodeMessageType.UPDATE_WORKER_NODE_LIST:
@@ -152,7 +164,7 @@ public class MRProtocolHandler
 
     public void UpdateWorkerNodes()
     {
-
+        // TODO
     }
 
     public int GetMasterNode()
@@ -162,7 +174,7 @@ public class MRProtocolHandler
 
     public void GetWorkerNodes()
     {
-
+        // TODO
     }
 
     /*
@@ -193,7 +205,48 @@ public class MRProtocolHandler
      */
     public void DetectMasterNodeFailure()
     {
+        replyMsg = new PeerNodeMessageType();
 
+        replyMsg.destNode = PeerNodeMessageType.BROADCAST_DEST_ID;
+        replyMsg.messageID = PeerNodeMessageType.MASTER_NODE_FAILED;
+
+        commsMgr.SendMsg(replyMsg);
+    }
+
+    /*
+     * Used if JobClient node.
+     */
+    public void SubmitMRJob(String filename)
+    {
+        PeerNodeMessageType msg;
+
+        msg = new PeerNodeMessageType();
+
+        msg.messageID = PeerNodeMessageType.SUBMIT_MR_JOB;
+        msg.destNode = masterNodeID;
+        msg.jobClientID = commsMgr.GetNodeID();
+        msg.srcFileName = filename;
+        msg.sourceNodeType = nodeType;
+
+        commsMgr.SendMsg(msg);
+    }
+
+    /*
+     * Used if Worker node. Worker call this when their piece of the MR job is
+     * completed.
+     */
+    public void WorkerMRJobComplete(int mrJobID, int blockNum)
+    {
+        PeerNodeMessageType msg;
+
+        msg = new PeerNodeMessageType();
+
+        msg.messageID = PeerNodeMessageType.MR_JOB_COMPLETE;
+        msg.destNode = masterNodeID;
+        msg.mrJobID = mrJobID;
+        msg.dataSetBlockNum = blockNum;
+
+        commsMgr.SendMsg(msg);
     }
 
 }
