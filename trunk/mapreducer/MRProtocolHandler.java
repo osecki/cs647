@@ -20,7 +20,7 @@ public class MRProtocolHandler
 
     public MRProtocolHandler()
     {
-
+    	workerNodeIDs = new ArrayList<Integer>();
     }
 
     public void SetSimulatorReference(Simulator reference)

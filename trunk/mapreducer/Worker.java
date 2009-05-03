@@ -22,9 +22,12 @@ public class Worker extends Thread
 	//Method that must be implemented to run worker as a thread
 	public void run() 
 	{	
+		//Tell simulator that we are connected
+		mrHandler.sim_NewWorkerNodeConnected(this.hashCode());
+		
 		while(true)
 		{
-			System.out.println("Worker Thread:  " + this.hashCode() + " is running");
+			//System.out.println("Worker Thread:  " + this.hashCode() + " is running");
 		}
 	}
 }
