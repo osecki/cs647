@@ -14,7 +14,7 @@ public class GlobalMessageQueue
 
     public GlobalMessageQueue()
     {
-
+    	messageQueues = new Hashtable<Integer, SynchronousQueue<PeerNodeMessageType>>();
     }
 
     /**
