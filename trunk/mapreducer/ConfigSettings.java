@@ -10,6 +10,7 @@ import java.util.Properties;
 public class ConfigSettings
 {
     public static int numNodes;
+    public static String workTextFile;
     public static boolean selfHealing;
     public static boolean selfOptimization;
 
@@ -30,6 +31,8 @@ public class ConfigSettings
                 // load number of nodes to spawn
                 numNodes = Integer.parseInt(pro.getProperty("numNodes"));
 
+                workTextFile = pro.getProperty("workTextFile");
+                
                 // load flag to determine if we want to self heal
                 selfHealing = Boolean.parseBoolean(pro.getProperty("selfHealing"));
 

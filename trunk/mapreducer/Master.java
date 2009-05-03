@@ -1,6 +1,6 @@
 package mapreducer;
 
-public class Master
+public class Master extends Thread
 {
     public MRProtocolHandler mrHandler;
 
@@ -13,4 +13,13 @@ public class Master
     {
         mrHandler = reference;
     }
+    
+	//Method that must be implemented to run worker as a thread
+	public void run() 
+	{	
+		while(true)
+		{
+			System.out.println("Master Thread:  " + this.hashCode() + " is running");
+		}
+	}
 }
