@@ -24,7 +24,7 @@ public class PeerNodeMessageType
     public static final int UPDATE_WORKER_NODE_LIST = 400;
 
     // Dest Node IDs for special messages
-    public static final int BROADCAST_DEST_ID = 255;
+    public static final int BROADCAST_DEST_ID = 999;
 
     public int messageID;
     public int sourceNode;
@@ -36,11 +36,12 @@ public class PeerNodeMessageType
     public String srcFileName;
     public int dataSetSize; // size of the chunk of data to map/reduce
     public int dataSetBlockNum; // Id of the particular chunk?
+    public int mrJobID; // ID of the MR Job
 
     // Master Node Election Logic related fields
 
     // General P2P Network information related fields
-    public int newMasterNodeID;
+    public int masterNodeID;
     public int[] workerNodeIDs;
 
     public PeerNodeMessageType()

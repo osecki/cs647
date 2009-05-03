@@ -1,6 +1,5 @@
 package mapreducer;
 
-
 public class P2PCommsManager implements Runnable
 {
     public GlobalMessageQueue msgQueue;
@@ -17,15 +16,9 @@ public class P2PCommsManager implements Runnable
     public P2PCommsManager(int id)
     {
         nodeID = id;
-    }
 
-    /**
-     * 
-     * @param reference
-     */
-    public void SetGlobalMessageQueueRef(GlobalMessageQueue reference)
-    {
-        msgQueue = reference;
+        msgQueue = GlobalMessageQueue.GetInstance();
+        msgQueue.CreateMessageQueue(id);
     }
 
     /**
