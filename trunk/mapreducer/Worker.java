@@ -12,6 +12,7 @@ public class Worker extends Thread
 
     public Worker()
     {
+    	
     }
 
     public void SetMRProtocolHandlerRef(MRProtocolHandler reference)
@@ -19,7 +20,7 @@ public class Worker extends Thread
         mrHandler = reference;
     }
 
-	//Method that must be implemented to run worker as a thread
+	// Method that must be implemented to run worker as a thread
 	public void run() 
 	{	
 		//Tell simulator that we are connected
@@ -29,5 +30,17 @@ public class Worker extends Thread
 		{
 			//System.out.println("Worker Thread:  " + this.hashCode() + " is running");
 		}
+	}
+	
+	// Method to handle PeerNodeMessageType.WORKER_START_MR_JOB
+	public void startMRJob ()
+	{
+		// TODO Have worker begin to do the MR job
+	}
+	
+	// Method to handle PeerNodeMessageType.MR_JOB_DATASET_REPLY
+	public void sendResults ()
+	{
+		// TODO send the results to the job client
 	}
 }

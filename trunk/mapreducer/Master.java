@@ -29,9 +29,16 @@ public class Master extends Thread
 		}
 	}
 	
+	// Method to handle PeerNodeMessageType.SUBMIT_MR_JOB
 	public void workerSubmittedJob()
 	{
-		//worker has submitted the job, now the master must 
-		//divide up the work
+		// Worker has submitted the job, now the master must divide up the work
+		// TODO Put algorithm here to decide how to divide up work
+	}
+	
+	// Method to handle PeerNodeMessageType.MR_JOB_COMPLETE
+	public void jobComplete()
+	{
+		// TODO Tell the job client the work is complete
 	}
 }

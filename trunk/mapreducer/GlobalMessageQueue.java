@@ -7,7 +7,6 @@ import java.util.concurrent.SynchronousQueue;
 public class GlobalMessageQueue
 {
     private static GlobalMessageQueue instance = null;
-
     // private SynchronousQueue<PeerNodeMessageType> newMsgQueue;
 
     private Hashtable<Integer, SynchronousQueue<PeerNodeMessageType>> messageQueues;
@@ -19,7 +18,6 @@ public class GlobalMessageQueue
 
     /**
      * Returns reference to the singleton
-     * 
      * @return
      */
     public static GlobalMessageQueue GetInstance()
@@ -32,7 +30,6 @@ public class GlobalMessageQueue
     }
 
     /**
-     * 
      * @param queID
      */
     public void CreateMessageQueue(int queID)
@@ -45,7 +42,6 @@ public class GlobalMessageQueue
     }
 
     /**
-     * 
      * @param queID
      */
     public void DestroyMessageQueue(int queID)
@@ -55,7 +51,6 @@ public class GlobalMessageQueue
 
     /**
      * Retrieve a message for a specific peer node
-     * 
      * @param nodeID
      * @return
      */
@@ -67,7 +62,6 @@ public class GlobalMessageQueue
 
     /**
      * Send a message to a specific peer node
-     * 
      * @param destNodeID
      * @param msg
      */
@@ -78,7 +72,6 @@ public class GlobalMessageQueue
 
     /**
      * Sends a message to all peer nodes
-     * 
      * @param msg
      */
     public void BroadcastMessage(PeerNodeMessageType msg)

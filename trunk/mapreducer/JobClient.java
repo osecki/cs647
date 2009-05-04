@@ -2,11 +2,12 @@ package mapreducer;
 
 public class JobClient extends Thread
 {
-	//pass down mrHandler
+	// Pass down mrHandler
 	MRProtocolHandler mrHandler;
 
     public JobClient()
     {
+    	
     }
 
     public void SetMRProtocolHandlerRef(MRProtocolHandler reference)
@@ -39,5 +40,16 @@ public class JobClient extends Thread
     		//System.out.println("Job Client Thread:  " + this.hashCode() + " is running");
     	}
     }
+    
+    // Method to handle PeerNodeMessageType.GET_MR_JOB_DATASET
+    public void getResults ()
+    {
+    	// TODO Request the results from all worker nodes
+    }
 
+    // Method to handle PeerNodeMessageType.MR_JOB_REDUCE_RESULT
+    public void reduceResult ()
+    {
+    	// TODO Method which calculates result of all data
+    }
 }

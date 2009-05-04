@@ -10,7 +10,6 @@ public class P2PCommsManager implements Runnable
     private int nodeID;
 
     /**
-     * 
      * @param id
      */
     public P2PCommsManager(int id)
@@ -22,7 +21,6 @@ public class P2PCommsManager implements Runnable
     }
 
     /**
-     * 
      * @param reference
      */
     public void SetMRProtocolHandlerRef(MRProtocolHandler reference)
@@ -46,7 +44,7 @@ public class P2PCommsManager implements Runnable
     }
 
     /**
-     * 
+     * Run the thread
      */
     public void run()
     {

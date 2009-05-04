@@ -19,7 +19,6 @@ public class ConfigSettings
         try
         {
             // Load the configuration file
-            BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
             File f = new File("Config.properties");
 
             if (f.exists())
