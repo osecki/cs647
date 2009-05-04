@@ -64,43 +64,42 @@ public class MRProtocolHandler
         {
             case PeerNodeMessageType.SUBMIT_MR_JOB:
             {
-                // TODO: Need function in Master class
-            	master.workerSubmittedJob();
+                master.workerSubmittedJob();
                 break;
             }
             case PeerNodeMessageType.WORKER_START_MR_JOB:
             {
-                // TODO: Need function in Worker class
+                worker.startMRJob();
                 break;
             }
             case PeerNodeMessageType.MR_JOB_COMPLETE:
             {
-                // TODO: Need function in Master class
+                master.jobComplete();
                 break;
             }
             case PeerNodeMessageType.MR_JOB_REDUCE_RESULT:
             {
-                // TODO: Need function in JobClient class
+                jobClient.reduceResult();
                 break;
             }
             case PeerNodeMessageType.GET_MR_JOB_DATASET:
             {
-                // TODO: Need function in JobClient class
+                jobClient.getResults();
                 break;
             }
             case PeerNodeMessageType.MR_JOB_DATASET_REPLY:
             {
-                // TODO: Need function in Worker class
+                worker.sendResults();
                 break;
             }
             case PeerNodeMessageType.HEART_BEAT_PING:
             {
-                // TODO: Need function in FaultAndHealth class
+                faultHealth.sendPing();
                 break;
             }
             case PeerNodeMessageType.HEART_BEAT_REPLY:
             {
-                // TODO: Need function in FaultAndHealth class
+                faultHealth.replyPing();
                 break;
             }
             case PeerNodeMessageType.MASTER_NODE_FAILED:
@@ -178,32 +177,21 @@ public class MRProtocolHandler
         // TODO
     }
 
-    /*
-     * Used if Master Node. Simulator calls this when it creates a new worker
-     * node
-     */
+    /* Used if Master Node. Simulator calls this when it creates a new worker node */
     public void sim_NewWorkerNodeConnected(int nodeID)
     {
         workerNodeIDs.add(nodeID);
-
         // TODO: Notify all peer nodes of new node
     }
 
-    /*
-     * Used if Master Node. Called by FaultAndHealth if worker node does not
-     * respond to Ping
-     */
+    /* Used if Master Node. Called by FaultAndHealth if worker node does not respond to Ping */
     public void DetectWorkerNodeFailure(int nodeID)
     {
         workerNodeIDs.remove(nodeID);
-
         // TODO: Call into master
     }
 
-    /*
-     * Used if Worker node. Called by FaultAndHealth if master pings no longer
-     * received
-     */
+    /* Used if Worker node. Called by FaultAndHealth if master pings no longer received */
     public void DetectMasterNodeFailure()
     {
         replyMsg = new PeerNodeMessageType();
@@ -214,9 +202,7 @@ public class MRProtocolHandler
         commsMgr.SendMsg(replyMsg);
     }
 
-    /*
-     * Used if JobClient node.
-     */
+    /*Used if JobClient node. */
     public void SubmitMRJob(String filename)
     {
         PeerNodeMessageType msg;
@@ -232,10 +218,7 @@ public class MRProtocolHandler
         commsMgr.SendMsg(msg);
     }
 
-    /*
-     * Used if Worker node. Worker call this when their piece of the MR job is
-     * completed.
-     */
+    /* Used if Worker node. Worker call this when their piece of the MR job is completed. */
     public void WorkerMRJobComplete(int mrJobID, int blockNum)
     {
         PeerNodeMessageType msg;
@@ -249,5 +232,4 @@ public class MRProtocolHandler
 
         commsMgr.SendMsg(msg);
     }
-
 }

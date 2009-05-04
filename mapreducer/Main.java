@@ -13,7 +13,7 @@ public class Main
     
     public static void main(String[] args) 
 	{
-		ConfigSettings.Init();			//read in configuration file settings
+		ConfigSettings.Init(); // Read in configuration file settings
 		
 		eventLogger = new EventLogging();
 		statLogger = new StatisticsLogging();

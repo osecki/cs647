@@ -1,5 +1,6 @@
 package mapreducer;
 
-public class StatisticsLogging {
+public class StatisticsLogging 
+{
 
 }

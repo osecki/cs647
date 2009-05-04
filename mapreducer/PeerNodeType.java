@@ -9,8 +9,7 @@ public class PeerNodeType
     public JobClient jobClient;
     public FaultAndHealth faultHealth;
     private PeerNodeRoleType roleType;
-    
-    
+
     public PeerNodeType()
     {
     	//Instantiate our 3 types of nodes which we could be

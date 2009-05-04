@@ -13,18 +13,15 @@ public class PeerNodeMessageType
     public static final int MASTER_NODE_FAILED = 200;
     public static final int NEW_MASTER_NODE = 201;
     public static final int INITIATE_NEW_MASTER_PROTOCOL = 202;
-    public static final int MASTER_NODE_QUERY = 203; // Used by job client to
-    // find master node
-    public static final int MASTER_NODE_QUERY_REPLY = 204; // Reply back to job
-    // client
+    public static final int MASTER_NODE_QUERY = 203; // Used by job client to find master node
+    public static final int MASTER_NODE_QUERY_REPLY = 204; // Reply back to job client
 
     public static final int HEART_BEAT_PING = 300;
     public static final int HEART_BEAT_REPLY = 301;
 
     public static final int UPDATE_WORKER_NODE_LIST = 400;
 
-    // Dest Node IDs for special messages
-    public static final int BROADCAST_DEST_ID = 999;
+    public static final int BROADCAST_DEST_ID = 999; // Dest Node IDs for special messages
 
     public int messageID;
     public int sourceNode;
@@ -39,7 +36,8 @@ public class PeerNodeMessageType
     public int mrJobID; // ID of the MR Job
 
     // Master Node Election Logic related fields
-
+    // TODO
+    
     // General P2P Network information related fields
     public int masterNodeID;
     public int[] workerNodeIDs;
