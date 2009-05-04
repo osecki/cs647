@@ -28,4 +28,10 @@ public class Master extends Thread
 			//System.out.println("Master Thread:  " + this.hashCode() + " is running");
 		}
 	}
+	
+	public void workerSubmittedJob()
+	{
+		//worker has submitted the job, now the master must 
+		//divide up the work
+	}
 }

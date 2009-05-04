@@ -65,6 +65,7 @@ public class MRProtocolHandler
             case PeerNodeMessageType.SUBMIT_MR_JOB:
             {
                 // TODO: Need function in Master class
+            	master.workerSubmittedJob();
                 break;
             }
             case PeerNodeMessageType.WORKER_START_MR_JOB:
