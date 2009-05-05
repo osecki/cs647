@@ -130,6 +130,9 @@ public class MRProtocolHandler
             }
             case PeerNodeMessageType.MASTER_NODE_QUERY:
             {
+            	System.out.println("IN MRProtocolHandler::ProcessPeerMessage MASTER_NODE_QUERY");
+            	
+            	
                 if (nodeType == PeerNodeRoleType.MASTER)
                 {
                     replyMsg = new PeerNodeMessageType();
@@ -231,5 +234,13 @@ public class MRProtocolHandler
         msg.dataSetBlockNum = blockNum;
 
         commsMgr.SendMsg(msg);
+    }
+    
+    public void QueryMasterNode()
+    {
+    	PeerNodeMessageType msg = new PeerNodeMessageType();
+    	msg.messageID = PeerNodeMessageType.MASTER_NODE_QUERY;
+    	msg.destNode = PeerNodeMessageType.BROADCAST_DEST_ID;
+    	commsMgr.SendMsg(msg);
     }
 }
