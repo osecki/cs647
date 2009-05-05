@@ -1,6 +1,6 @@
 package mapreducer;
 
-public class P2PCommsManager implements Runnable
+public class P2PCommsManager extends Thread
 {
     public GlobalMessageQueue msgQueue;
     public MRProtocolHandler mrHandler;
@@ -52,22 +52,23 @@ public class P2PCommsManager implements Runnable
 
         while (runLoop)
         {
+        	
             if (allowNodeToRun == true)
             {
-                // Read message queue
-                PeerNodeMessageType msg = msgQueue.GetNextMsg(nodeID);
-
-                mrHandler.ProcessPeerNodeMessage(msg);
-            }
-
-            try
-            {
-                Thread.sleep(1000);
-            }
-            catch (InterruptedException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            	try
+            	{
+                    // Read message queue
+                    PeerNodeMessageType msg = msgQueue.GetNextMsg(nodeID);
+                    
+                    if (msg != null)
+                    {                    	
+                    	mrHandler.ProcessPeerNodeMessage(msg);
+                    }
+            	}
+            	catch(Exception ex)
+            	{
+            		System.out.println(ex.getMessage());
+            	}
             }
         }
     }
@@ -78,7 +79,6 @@ public class P2PCommsManager implements Runnable
 
         if (msg.destNode == PeerNodeMessageType.BROADCAST_DEST_ID)
         {
-        	System.out.println("GOT HERE");
             msgQueue.BroadcastMessage(msg);
         }
         else
