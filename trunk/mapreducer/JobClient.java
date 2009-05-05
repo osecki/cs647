@@ -26,13 +26,15 @@ public class JobClient extends Thread
     	//Need to only submit job if a master exists
     	while(!masterExists)
     	{
-    		
+    		mrHandler.QueryMasterNode();
+    	/*	
     		if (mrHandler.GetMasterNode() > 0)
     		{
     			System.out.println("FOUND MASTER!!! ");
     			masterExists = true;
     			mrHandler.SubmitMRJob(fileName);
     		}
+    	*/	
     	}
     	
     	while(true)

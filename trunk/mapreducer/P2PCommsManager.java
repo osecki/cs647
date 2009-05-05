@@ -78,6 +78,7 @@ public class P2PCommsManager implements Runnable
 
         if (msg.destNode == PeerNodeMessageType.BROADCAST_DEST_ID)
         {
+        	System.out.println("GOT HERE");
             msgQueue.BroadcastMessage(msg);
         }
         else
