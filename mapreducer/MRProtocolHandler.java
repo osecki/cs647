@@ -31,6 +31,7 @@ public class MRProtocolHandler
     public void SetP2PCommsManagerReference(P2PCommsManager reference)
     {
         commsMgr = reference;
+        commsMgr.start();
     }
 
     public void SetMasterReference(Master reference)
@@ -60,6 +61,8 @@ public class MRProtocolHandler
 
     public void ProcessPeerNodeMessage(PeerNodeMessageType msg)
     {
+    	System.out.println("PROCESS PEER NODE MSG");
+    	
         switch (msg.messageID)
         {
             case PeerNodeMessageType.SUBMIT_MR_JOB:
@@ -236,6 +239,7 @@ public class MRProtocolHandler
         commsMgr.SendMsg(msg);
     }
     
+    //Interface to let a node send a message to query for the master node
     public void QueryMasterNode()
     {
     	PeerNodeMessageType msg = new PeerNodeMessageType();

@@ -2,6 +2,8 @@ package mapreducer;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.concurrent.SynchronousQueue;
 
 public class GlobalMessageQueue
@@ -9,11 +11,11 @@ public class GlobalMessageQueue
     private static GlobalMessageQueue instance = null;
     // private SynchronousQueue<PeerNodeMessageType> newMsgQueue;
 
-    private Hashtable<Integer, SynchronousQueue<PeerNodeMessageType>> messageQueues;
+    private Hashtable<Integer, LinkedList<PeerNodeMessageType>> messageQueues;
 
     public GlobalMessageQueue()
     {
-    	messageQueues = new Hashtable<Integer, SynchronousQueue<PeerNodeMessageType>>();
+    	messageQueues = new Hashtable<Integer, LinkedList<PeerNodeMessageType>>();
     }
 
     /**
@@ -34,9 +36,9 @@ public class GlobalMessageQueue
      */
     public void CreateMessageQueue(int queID)
     {
-        SynchronousQueue<PeerNodeMessageType> newMsgQueue;
+        LinkedList<PeerNodeMessageType> newMsgQueue;
 
-        newMsgQueue = new SynchronousQueue<PeerNodeMessageType>();
+        newMsgQueue = new LinkedList<PeerNodeMessageType>();
 
         messageQueues.put(queID, newMsgQueue);
     }
