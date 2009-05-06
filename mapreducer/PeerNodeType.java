@@ -30,6 +30,8 @@ public class PeerNodeType
     	mrHandler.SetP2PCommsManagerReference(p2pComms);
     	mrHandler.SetWorkerReference(worker);
     	
+    	p2pComms.SetMRProtocolHandlerRef(mrHandler);
+    	
     	//Set master reference to the mrHandler
     	master.SetMRProtocolHandlerRef(mrHandler);
     	
