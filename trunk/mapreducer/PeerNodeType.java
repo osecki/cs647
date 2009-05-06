@@ -45,6 +45,7 @@ public class PeerNodeType
     public void setRoleType(PeerNodeRoleType role)
     {
     	roleType = role;
+    	mrHandler.SetNodeType(role);
     }
 
     public PeerNodeRoleType getRoleType()
