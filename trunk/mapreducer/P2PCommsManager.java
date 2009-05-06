@@ -61,13 +61,13 @@ public class P2PCommsManager extends Thread
                     PeerNodeMessageType msg = msgQueue.GetNextMsg(nodeID);
                     
                     if (msg != null)
-                    {                    	
+                    {      
                     	mrHandler.ProcessPeerNodeMessage(msg);
                     }
             	}
             	catch(Exception ex)
             	{
-            		System.out.println(ex.getMessage());
+            		System.out.println("Exception in P2PCommMsg::Run " + ex.getMessage());
             	}
             }
         }
