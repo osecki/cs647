@@ -60,9 +60,7 @@ public class MRProtocolHandler
     }
 
     public void ProcessPeerNodeMessage(PeerNodeMessageType msg)
-    {
-    	System.out.println("PROCESS PEER NODE MSG");
-    	
+    {    	    	
         switch (msg.messageID)
         {
             case PeerNodeMessageType.SUBMIT_MR_JOB:
@@ -132,12 +130,13 @@ public class MRProtocolHandler
                 break;
             }
             case PeerNodeMessageType.MASTER_NODE_QUERY:
-            {
-            	System.out.println("IN MRProtocolHandler::ProcessPeerMessage MASTER_NODE_QUERY");
-            	
+            {            	
+            	System.out.println(nodeType);
             	
                 if (nodeType == PeerNodeRoleType.MASTER)
                 {
+                	System.out.println("Master received the master_node_query");
+                	
                     replyMsg = new PeerNodeMessageType();
 
                     replyMsg.messageID = PeerNodeMessageType.MASTER_NODE_QUERY_REPLY;

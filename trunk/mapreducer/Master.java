@@ -12,6 +12,7 @@ public class Master extends Thread
     public void SetMRProtocolHandlerRef(MRProtocolHandler reference)
     {
         mrHandler = reference;
+    	mrHandler.SetNodeType(PeerNodeRoleType.MASTER);
     }
     
 	//Method that must be implemented to run worker as a thread

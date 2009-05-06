@@ -18,6 +18,7 @@ public class Worker extends Thread
     public void SetMRProtocolHandlerRef(MRProtocolHandler reference)
     {
         mrHandler = reference;
+    	mrHandler.SetNodeType(PeerNodeRoleType.WORKER);
     }
 
 	// Method that must be implemented to run worker as a thread

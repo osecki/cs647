@@ -16,6 +16,7 @@ public class JobClient extends Thread
     
     	//Set job client reference in handler
     	mrHandler.SetJobClientReference(this);
+    	mrHandler.SetNodeType(PeerNodeRoleType.CLIENT);
     }
     
     public void run()
