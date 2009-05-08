@@ -12,62 +12,80 @@ public class PeerNodeType
 
     public PeerNodeType()
     {
-    	//Instantiate our 3 types of nodes which we could be
-    	master = new Master();
-    	worker = new Worker();
-    	jobClient = new JobClient();
-    	
-    	//Instantiate the comms and fault modules
-    	p2pComms = new P2PCommsManager(this.hashCode());
-    	faultHealth = new FaultAndHealth();
-    
-    	//Instantiate and configure the MRProtocolHandler
-    	mrHandler = new MRProtocolHandler();
-    	mrHandler.SetNodeType(roleType);
-    	mrHandler.SetFaultAndHealthReference(faultHealth);
-    	mrHandler.SetJobClientReference(jobClient);
-    	mrHandler.SetMasterReference(master);
-    	mrHandler.SetP2PCommsManagerReference(p2pComms);
-    	mrHandler.SetWorkerReference(worker);
-    	
-    	p2pComms.SetMRProtocolHandlerRef(mrHandler);
-    	
-    	//Set master reference to the mrHandler
-    	master.SetMRProtocolHandlerRef(mrHandler);
-    	
-    	//Set job client reference to the mrHandler
-    	jobClient.SetMRProtocolHandlerRef(mrHandler);
-    	
-    	//Set worker reference to the mrHandler
-    	worker.SetMRProtocolHandlerRef(mrHandler);
+        // Instantiate our 3 types of nodes which we could be
+        master = new Master();
+        worker = new Worker();
+        jobClient = new JobClient();
+
+        // Instantiate the comms and fault modules
+        p2pComms = new P2PCommsManager(this.hashCode());
+        faultHealth = new FaultAndHealth();
+
+        // Instantiate and configure the MRProtocolHandler
+        mrHandler = new MRProtocolHandler();
+        mrHandler.SetNodeType(roleType);
+        mrHandler.SetFaultAndHealthReference(faultHealth);
+        mrHandler.SetJobClientReference(jobClient);
+        mrHandler.SetMasterReference(master);
+        mrHandler.SetP2PCommsManagerReference(p2pComms);
+        mrHandler.SetWorkerReference(worker);
+
+        p2pComms.SetMRProtocolHandlerRef(mrHandler);
+
+        // Set master reference to the mrHandler
+        master.SetMRProtocolHandlerRef(mrHandler);
+
+        // Set job client reference to the mrHandler
+        jobClient.SetMRProtocolHandlerRef(mrHandler);
+
+        // Set worker reference to the mrHandler
+        worker.SetMRProtocolHandlerRef(mrHandler);
+
+        // TODO: Still need references in FaultAndHealth ????
     }
-    
+
+    public void setNodeName()
+    {
+        mrHandler.SetNodeName();
+    }
+
     public void setRoleType(PeerNodeRoleType role)
     {
-    	roleType = role;
-    	mrHandler.SetNodeType(role);
+        roleType = role;
+        mrHandler.SetNodeType(role);
     }
 
     public PeerNodeRoleType getRoleType()
     {
-    	return roleType;
+        return roleType;
     }
-    
+
+    /**
+     * Starts the appropriate threads for this node
+     */
     public void run()
-    {	
-    	//Based on our assigned role, we will start the appropriate node type
-    	
-    	if (roleType == PeerNodeRoleType.CLIENT)
-    	{
-    		jobClient.start();
-    	}
-    	else if (roleType == PeerNodeRoleType.MASTER)
-    	{    		
-    		master.start();
-    	}
-    	else if (roleType == PeerNodeRoleType.WORKER)
-    	{
-    		worker.start();
-    	}
+    {
+        // Start the Communcations Thread
+        p2pComms.start();
+
+        // Based on our assigned role, we will start the appropriate node type
+
+        if (roleType == PeerNodeRoleType.CLIENT)
+        {
+            jobClient.start();
+        }
+        else if (roleType == PeerNodeRoleType.MASTER)
+        {
+            // master.start();
+        }
+        else if (roleType == PeerNodeRoleType.WORKER)
+        {
+            worker.start();
+        }
+    }
+
+    public void sim_InitialMasterNodeIDBroadcast()
+    {
+        mrHandler.BroadcastNewMasterNode();
     }
 }
