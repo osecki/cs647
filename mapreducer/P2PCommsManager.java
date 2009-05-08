@@ -33,11 +33,19 @@ public class P2PCommsManager extends Thread
         return nodeID;
     }
 
+    /**
+     * Method for Simulator to call that will simulate a failure of this node.
+     * By skipping the polling of the message queue, this node will not respond
+     * to the HeartBeat signal.
+     */
     public void sim_FailThisNode()
     {
         allowNodeToRun = false;
     }
 
+    /**
+     * Method for Simulator to call that will restart this node.
+     */
     public void sim_RestartThisNode()
     {
         allowNodeToRun = true;
@@ -50,25 +58,34 @@ public class P2PCommsManager extends Thread
     {
         boolean runLoop = true;
 
+        String threadName = mrHandler.GetNodeName() + ":CommsMgr";
+        System.out.println("Starting Thread => " + threadName);
+
+        this.setName(threadName);
+
         while (runLoop)
         {
-        	
+
             if (allowNodeToRun == true)
             {
-            	try
-            	{
+                try
+                {
                     // Read message queue
                     PeerNodeMessageType msg = msgQueue.GetNextMsg(nodeID);
-                    
+                    // System.out.println("Calling GetNextMsg" + ":" +
+                    // mrHandler.GetNodeName());
+
                     if (msg != null)
-                    {      
-                    	mrHandler.ProcessPeerNodeMessage(msg);
+                    {
+                        mrHandler.ProcessPeerNodeMessage(msg);
                     }
-            	}
-            	catch(Exception ex)
-            	{
-            		System.out.println("Exception in P2PCommMsg::Run " + ex.getMessage());
-            	}
+
+                    Thread.sleep(100);
+                }
+                catch (Exception ex)
+                {
+                    System.out.println("Exception in P2PCommMsg::Run " + ex.getMessage());
+                }
             }
         }
     }

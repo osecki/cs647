@@ -12,6 +12,7 @@ public class MRProtocolHandler
     public Simulator sim;
 
     private PeerNodeRoleType nodeType;
+    private String nodeName;
 
     private int masterNodeID;
     private ArrayList<Integer> workerNodeIDs;
@@ -20,7 +21,7 @@ public class MRProtocolHandler
 
     public MRProtocolHandler()
     {
-    	workerNodeIDs = new ArrayList<Integer>();
+        workerNodeIDs = new ArrayList<Integer>();
     }
 
     public void SetSimulatorReference(Simulator reference)
@@ -31,7 +32,6 @@ public class MRProtocolHandler
     public void SetP2PCommsManagerReference(P2PCommsManager reference)
     {
         commsMgr = reference;
-        commsMgr.start();
     }
 
     public void SetMasterReference(Master reference)
@@ -59,8 +59,18 @@ public class MRProtocolHandler
         nodeType = type;
     }
 
+    public void SetNodeName()
+    {
+        nodeName = nodeType.toString() + ":" + String.valueOf(commsMgr.GetNodeID());
+    }
+
+    public String GetNodeName()
+    {
+        return nodeName;
+    }
+
     public void ProcessPeerNodeMessage(PeerNodeMessageType msg)
-    {    	    	
+    {
         switch (msg.messageID)
         {
             case PeerNodeMessageType.SUBMIT_MR_JOB:
@@ -85,12 +95,12 @@ public class MRProtocolHandler
             }
             case PeerNodeMessageType.GET_MR_JOB_DATASET:
             {
-                jobClient.getResults();
+                jobClient.getDataset();
                 break;
             }
             case PeerNodeMessageType.MR_JOB_DATASET_REPLY:
             {
-                worker.sendResults();
+                worker.processDataset();
                 break;
             }
             case PeerNodeMessageType.HEART_BEAT_PING:
@@ -125,18 +135,25 @@ public class MRProtocolHandler
             }
             case PeerNodeMessageType.NEW_MASTER_NODE:
             {
-                // TODO: Need function in MRProtocolHandler class
-                UpdateMasterNode(msg.masterNodeID);
+                // Only Worker and JobClient nodes need to be notified of a new
+                // master node
+                if (nodeType != PeerNodeRoleType.MASTER)
+                {
+                    UpdateMasterNode(msg.masterNodeID);
+                    System.out.println(nodeName + " saving new master node id:"
+                            + String.valueOf(masterNodeID));
+                }
                 break;
             }
             case PeerNodeMessageType.MASTER_NODE_QUERY:
-            {            	
-            	System.out.println(nodeType);
-            	
+            {
+                // System.out.println(nodeType +
+                // String.valueOf(commsMgr.GetNodeID()));
+
                 if (nodeType == PeerNodeRoleType.MASTER)
                 {
-                	System.out.println("Master received the master_node_query");
-                	
+                    System.out.println("Master received the master_node_query");
+
                     replyMsg = new PeerNodeMessageType();
 
                     replyMsg.messageID = PeerNodeMessageType.MASTER_NODE_QUERY_REPLY;
@@ -151,11 +168,13 @@ public class MRProtocolHandler
             case PeerNodeMessageType.MASTER_NODE_QUERY_REPLY:
             {
                 // On the reply, set the master node
-                UpdateMasterNode(msg.masterNodeID);
+                UpdateMasterNode(msg.sourceNode);
                 break;
             }
             case PeerNodeMessageType.UPDATE_WORKER_NODE_LIST:
             {
+                // The Worker node and Master node need to maintain this list
+
                 // TODO: Need function in MRProtocolHandler class
                 break;
             }
@@ -182,21 +201,35 @@ public class MRProtocolHandler
         // TODO
     }
 
-    /* Used if Master Node. Simulator calls this when it creates a new worker node */
+    public PeerNodeRoleType GetNodeType()
+    {
+        return nodeType;
+    }
+
+    /*
+     * Used if Master Node. Simulator calls this when it creates a new worker
+     * node
+     */
     public void sim_NewWorkerNodeConnected(int nodeID)
     {
         workerNodeIDs.add(nodeID);
         // TODO: Notify all peer nodes of new node
     }
 
-    /* Used if Master Node. Called by FaultAndHealth if worker node does not respond to Ping */
+    /*
+     * Used if Master Node. Called by FaultAndHealth if worker node does not
+     * respond to Ping
+     */
     public void DetectWorkerNodeFailure(int nodeID)
     {
         workerNodeIDs.remove(nodeID);
         // TODO: Call into master
     }
 
-    /* Used if Worker node. Called by FaultAndHealth if master pings no longer received */
+    /*
+     * Used if Worker node. Called by FaultAndHealth if master pings no longer
+     * received
+     */
     public void DetectMasterNodeFailure()
     {
         replyMsg = new PeerNodeMessageType();
@@ -207,7 +240,7 @@ public class MRProtocolHandler
         commsMgr.SendMsg(replyMsg);
     }
 
-    /*Used if JobClient node. */
+    /* Used if JobClient node. */
     public void SubmitMRJob(String filename)
     {
         PeerNodeMessageType msg;
@@ -223,7 +256,10 @@ public class MRProtocolHandler
         commsMgr.SendMsg(msg);
     }
 
-    /* Used if Worker node. Worker call this when their piece of the MR job is completed. */
+    /*
+     * Used if Worker node. Worker call this when their piece of the MR job is
+     * completed.
+     */
     public void WorkerMRJobComplete(int mrJobID, int blockNum)
     {
         PeerNodeMessageType msg;
@@ -237,13 +273,26 @@ public class MRProtocolHandler
 
         commsMgr.SendMsg(msg);
     }
-    
-    //Interface to let a node send a message to query for the master node
+
+    // Interface to let a node send a message to query for the master node
     public void QueryMasterNode()
     {
-    	PeerNodeMessageType msg = new PeerNodeMessageType();
-    	msg.messageID = PeerNodeMessageType.MASTER_NODE_QUERY;
-    	msg.destNode = PeerNodeMessageType.BROADCAST_DEST_ID;
-    	commsMgr.SendMsg(msg);
+        PeerNodeMessageType msg = new PeerNodeMessageType();
+        msg.messageID = PeerNodeMessageType.MASTER_NODE_QUERY;
+        msg.destNode = PeerNodeMessageType.BROADCAST_DEST_ID;
+        commsMgr.SendMsg(msg);
+    }
+
+    /*
+     * The newly elected master node calls this to notify other nodes who the
+     * new master is
+     */
+    public void BroadcastNewMasterNode()
+    {
+        PeerNodeMessageType msg = new PeerNodeMessageType();
+        msg.messageID = PeerNodeMessageType.NEW_MASTER_NODE;
+        msg.destNode = PeerNodeMessageType.BROADCAST_DEST_ID;
+        msg.masterNodeID = commsMgr.GetNodeID();
+        commsMgr.SendMsg(msg);
     }
 }

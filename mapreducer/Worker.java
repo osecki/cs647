@@ -12,36 +12,40 @@ public class Worker extends Thread
 
     public Worker()
     {
-    	
+
     }
 
     public void SetMRProtocolHandlerRef(MRProtocolHandler reference)
     {
         mrHandler = reference;
-    	mrHandler.SetNodeType(PeerNodeRoleType.WORKER);
     }
 
-	// Method that must be implemented to run worker as a thread
-	public void run() 
-	{	
-		//Tell simulator that we are connected
-		mrHandler.sim_NewWorkerNodeConnected(this.hashCode());
-		
-		while(true)
-		{
-			//System.out.println("Worker Thread:  " + this.hashCode() + " is running");
-		}
-	}
-	
-	// Method to handle PeerNodeMessageType.WORKER_START_MR_JOB
-	public void startMRJob ()
-	{
-		// TODO Have worker begin to do the MR job
-	}
-	
-	// Method to handle PeerNodeMessageType.MR_JOB_DATASET_REPLY
-	public void sendResults ()
-	{
-		// TODO send the results to the job client
-	}
+    // Method that must be implemented to run worker as a thread
+    public void run()
+    {
+        String threadName = mrHandler.GetNodeName();
+        System.out.println("Starting Thread => " + threadName);
+        this.setName(threadName);
+
+        // Loop on a m/r queue, when stuff is in the queue, do m/r
+        while (true)
+        {
+            // System.out.println("Worker Thread:  " + this.hashCode() +
+            // " is running");
+        }
+    }
+
+    // Method to handle PeerNodeMessageType.WORKER_START_MR_JOB
+    public void startMRJob()
+    {
+        // TODO Have worker begin to do the MR job.
+        // Sends the GET_MR_JOB_DATASET message to the job client
+    }
+
+    // Method to handle PeerNodeMessageType.MR_JOB_DATASET_REPLY
+    public void processDataset()
+    {
+        // TODO The dataset for this worker has arrived, start the m/r job. Put
+        // on queue for thread to process????
+    }
 }
