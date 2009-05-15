@@ -24,9 +24,12 @@ public class Worker extends Thread
     public void run()
     {
         String threadName = mrHandler.GetNodeName();
-        System.out.println("Starting Thread => " + threadName);
+        System.out.println("Starting Worker Thread => " + threadName);
         this.setName(threadName);
 
+        //BS TEST
+        this.mrHandler.sim_NewWorkerNodeConnected(this.hashCode());
+        
         // Loop on a m/r queue, when stuff is in the queue, do m/r
         while (true)
         {

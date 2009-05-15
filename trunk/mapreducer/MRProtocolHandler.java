@@ -176,6 +176,11 @@ public class MRProtocolHandler
                 // The Worker node and Master node need to maintain this list
 
                 // TODO: Need function in MRProtocolHandler class
+            	
+            	//Save worker list
+            	for (int i = 0; i < msg.workerNodeIDs.length; i++)
+            		this.workerNodeIDs.add(msg.workerNodeIDs[i]);
+            	
                 break;
             }
         }
@@ -200,6 +205,11 @@ public class MRProtocolHandler
     {
         // TODO
     }
+    
+    public int getWorkerCount()
+    {
+    	return workerNodeIDs.size(); 
+    }
 
     public PeerNodeRoleType GetNodeType()
     {
@@ -213,7 +223,15 @@ public class MRProtocolHandler
     public void sim_NewWorkerNodeConnected(int nodeID)
     {
         workerNodeIDs.add(nodeID);
+        
         // TODO: Notify all peer nodes of new node
+        
+        //BS TEST CODE
+        PeerNodeMessageType msg = new PeerNodeMessageType();
+        msg.destNode = PeerNodeMessageType.BROADCAST_DEST_ID;
+        msg.messageID = PeerNodeMessageType.UPDATE_WORKER_NODE_LIST;
+        msg.workerNodeIDs = workerNodeIDs.toArray(new Integer[workerNodeIDs.size()]);
+        commsMgr.SendMsg(msg);        
     }
 
     /*
