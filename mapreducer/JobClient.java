@@ -60,7 +60,9 @@ public class JobClient extends Thread
                 {
                     System.out.println("FOUND MASTER!!! ");
                     masterExists = true;
-                    // mrHandler.SubmitMRJob(fileName);
+                    
+                    //submit MR job
+                    mrHandler.SubmitMRJob(fileName);
                 }
 
             }

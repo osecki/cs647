@@ -31,10 +31,14 @@ public class Master extends Thread
     }
 
     // Method to handle PeerNodeMessageType.SUBMIT_MR_JOB
-    public void workerSubmittedJob()
+    public void workerSubmittedJob(String srcFile)
     {
         // Worker has submitted the job, now the master must divide up the work
         // TODO Put algorithm here to decide how to divide up work
+    	
+    	System.out.println("Master::workerSubmittedJob : " + srcFile);
+    	
+    	
     }
 
     /*

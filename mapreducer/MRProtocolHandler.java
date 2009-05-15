@@ -75,7 +75,7 @@ public class MRProtocolHandler
         {
             case PeerNodeMessageType.SUBMIT_MR_JOB:
             {
-                master.workerSubmittedJob();
+                master.workerSubmittedJob(msg.srcFileName);
                 break;
             }
             case PeerNodeMessageType.WORKER_START_MR_JOB:
