@@ -40,7 +40,7 @@ public class PeerNodeMessageType
     
     // General P2P Network information related fields
     public int masterNodeID;
-    public int[] workerNodeIDs;
+    public Integer[] workerNodeIDs;
 
     public PeerNodeMessageType()
     {

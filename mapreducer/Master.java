@@ -1,5 +1,10 @@
 package mapreducer;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class Master extends Thread
 {
     public MRProtocolHandler mrHandler;
@@ -35,9 +40,28 @@ public class Master extends Thread
     {
         // Worker has submitted the job, now the master must divide up the work
         // TODO Put algorithm here to decide how to divide up work
+
+    	String text;
+    	int totalWords = 0;
     	
     	System.out.println("Master::workerSubmittedJob : " + srcFile);
     	
+    	//Maybe read the number of words in the file and split among workers for now
+    	
+		try 
+		{
+			FileReader fileReader = new FileReader(srcFile);
+			BufferedReader reader = new BufferedReader(fileReader);
+
+	    	while ((text = reader.readLine()) != null)
+	    		totalWords = totalWords + text.split(" ").length;
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+
+    	System.out.println("Total Words In File: " + totalWords + " To Split Among (" + mrHandler.getWorkerCount() + ") Workers");
     	
     }
 
