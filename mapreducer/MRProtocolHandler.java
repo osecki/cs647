@@ -1,6 +1,7 @@
 package mapreducer;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 public class MRProtocolHandler
 {
@@ -373,6 +374,7 @@ public class MRProtocolHandler
     		
     		//ADD WORKER NODE ID TO MASTER JOB TABLE WITH FALSE
     		//TO INDICATE NO RESPONSE YET
+    		master.jobTable.get(jobID).put(msg.destNode, -1);
     		
     		
     		this.commsMgr.SendMsg(msg);
@@ -414,6 +416,6 @@ public class MRProtocolHandler
     //This method allows the master to tell the job client the work is complete
     public void WorkComplete()
     {
-    	
+    	System.out.println("WORK DONE!!!");
     }
 }

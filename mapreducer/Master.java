@@ -86,6 +86,9 @@ public class Master extends Thread
 		//Get a new JobID
 		jobID = jobID + 1;
 		
+		//create new entry in job table
+		this.jobTable.put(jobID, new Hashtable<Integer, Integer>());
+		
     	//Tell workers to get the data sets
     	this.mrHandler.AssignWorkersJob(jobID, words, wordToSearch, jobClientID);
     }
@@ -102,24 +105,26 @@ public class Master extends Thread
     	boolean done = true;
     	
     	System.out.println("Master::jobComplete Job " + jobID + " - " + "Worker " + workerID + " finished with results: " + result);
-/*
-    	//signify that we have a response from this worker
-    	jobTable.put(workerID, true);
+
+    	//Update job table with result
+    	jobTable.get(jobID).put(workerID, result);
     	
     	//check to see if all workers have answered
-    	Iterator<Integer> iter = jobTable.keySet().iterator();
+    	Iterator<Integer> iter = jobTable.get(jobID).keySet().iterator();
     	while (iter.hasNext())
     	{
-    		if (jobTable.get(iter.next()) == false)
+    		int workerResult = jobTable.get(jobID).get(iter.next());
+    		if (workerResult == -1)
+    		{
     			done = false;
+    		}
     	}
     	
-        // TODO Tell the job client the work is complete
-    	
+        // Tell the job client the work is complete
     	if (done)
     	{
     		mrHandler.WorkComplete();
     	}
-*/    	
+
     }
 }
