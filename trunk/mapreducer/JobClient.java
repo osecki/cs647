@@ -11,7 +11,8 @@ public class JobClient extends Thread
     public int nodeID;
     
     boolean allowJobClientThreadToRun = false;
-
+	ArrayList<String> words;
+    
     public JobClient()
     {
 
@@ -53,6 +54,7 @@ public class JobClient extends Thread
                 mrHandler.QueryMasterNode();
 
                 // Sleep 5 seconds to allow for reply
+                
                 try
                 {
                     Thread.sleep(5000);
@@ -62,11 +64,44 @@ public class JobClient extends Thread
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+                
 
                 if (mrHandler.GetMasterNode() > 0)
                 {
                     System.out.println("FOUND MASTER!!! ");
                     masterExists = true;
+                    
+                	String text;
+                    
+                    //Construct file in arraylist
+            		try 
+            		{
+    
+            			words = new ArrayList<String>();
+            			FileReader fileReader = new FileReader(ConfigSettings.workTextFile);
+            			BufferedReader reader = new BufferedReader(fileReader);
+
+            	    	while ((text = reader.readLine()) != null)
+            	    	{
+            	    		String[] temp = text.split(" ");
+            	    
+            	    		//Add each word to a list for splitting up into chunks later
+            	    		for (int j = 0; j < temp.length; j++)
+            	    			words.add(temp[j]);
+            	    	}
+            	    	
+            	    	//add a padding word
+            	    	words.add("");
+            	    	
+            	    	reader.close();
+            	    	fileReader.close();
+            		} 
+            		catch (Exception e) 
+            		{
+            			e.printStackTrace();
+            		}    	  
+                    
+                    
                     
                     //submit MR job
                     mrHandler.SubmitMRJob(fileName, wordToSearch);
