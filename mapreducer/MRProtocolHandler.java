@@ -31,6 +31,7 @@ public class MRProtocolHandler
 
     public void SetP2PCommsManagerReference(P2PCommsManager reference)
     {
+    	System.out.println("********** SET COMMS ********** ");
         commsMgr = reference;
     }
 
@@ -80,6 +81,7 @@ public class MRProtocolHandler
             }
             case PeerNodeMessageType.WORKER_START_MR_JOB:
             {
+            	System.out.println("ProcessPeerNodeMessage: WORKER_START_MR_JOB");
                 worker.startMRJob();
                 break;
             }
@@ -355,7 +357,10 @@ public class MRProtocolHandler
         		msg.dataSetSize = (msg.dataSetBlockNumEndIndex - msg.dataSetBlockNumBeginIndex);
         	}
         	
-    		System.out.println("WORKER " + i + " ASSIGNED: " + msg.dataSetBlockNumBeginIndex + " - " + msg.dataSetBlockNumEndIndex + " : " + msg.dataSetSize);
+    		System.out.println("WORKER " + msg.destNode + " (" + i + ") ASSIGNED: " + msg.dataSetBlockNumBeginIndex + " - " + msg.dataSetBlockNumEndIndex + " : " + msg.dataSetSize);
+    		
+    		//Send the message   FIX ME - WHY IS COMMSMGR NULL ?
+    		this.commsMgr.SendMsg(msg);
     	}
     }
 }
