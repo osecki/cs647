@@ -70,11 +70,12 @@ public class P2PCommsManager extends Thread
             {
                 try
                 {
+                	
                     // Read message queue
                     PeerNodeMessageType msg = msgQueue.GetNextMsg(nodeID);
                     // System.out.println("Calling GetNextMsg" + ":" +
                     // mrHandler.GetNodeName());
-
+                    
                     if (msg != null)
                     {
                         mrHandler.ProcessPeerNodeMessage(msg);
@@ -100,7 +101,9 @@ public class P2PCommsManager extends Thread
         }
         else
         {
+        	System.out.println("P2P::SendMsg1");
             msgQueue.SendMsg(msg.destNode, msg);
+            System.out.println("P2P::SendMsg2");
         }
     }
 }
