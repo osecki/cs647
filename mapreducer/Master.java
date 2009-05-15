@@ -22,6 +22,9 @@ public class Master extends Thread
     //Value = hashtable (key = WorkerID, value = result)
     public Hashtable<Integer, Hashtable<Integer, Integer>> jobTable;
     
+    //Table to keep key=jobID value=jobClientID
+    public Hashtable<Integer, Integer> jobClientMap = new Hashtable<Integer,Integer>();
+    
     public Master()
     {
     }
@@ -85,6 +88,9 @@ public class Master extends Thread
 
 		//Get a new JobID
 		jobID = jobID + 1;
+
+		//create new entry in job client map
+		this.jobClientMap.put(jobID, jobClientID);
 		
 		//create new entry in job table
 		this.jobTable.put(jobID, new Hashtable<Integer, Integer>());
@@ -103,6 +109,7 @@ public class Master extends Thread
     public void jobComplete(int jobID, int workerID, int result)
     {
     	boolean done = true;
+    	ArrayList<Integer> totalResults = new ArrayList<Integer>();
     	
     	System.out.println("Master::jobComplete Job " + jobID + " - " + "Worker " + workerID + " finished with results: " + result);
 
@@ -114,6 +121,10 @@ public class Master extends Thread
     	while (iter.hasNext())
     	{
     		int workerResult = jobTable.get(jobID).get(iter.next());
+    		
+    		//add result to results list for sending back to job client
+    		totalResults.add(workerResult);
+    		
     		if (workerResult == -1)
     		{
     			done = false;
@@ -123,7 +134,8 @@ public class Master extends Thread
         // Tell the job client the work is complete
     	if (done)
     	{
-    		mrHandler.WorkComplete();
+    		int jobClientID = this.jobClientMap.get(jobID);
+    		mrHandler.WorkComplete(jobClientID, jobID, totalResults);
     	}
 
     }
