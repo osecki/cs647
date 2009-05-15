@@ -31,7 +31,6 @@ public class MRProtocolHandler
 
     public void SetP2PCommsManagerReference(P2PCommsManager reference)
     {
-    	System.out.println("********** SET COMMS ********** ");
         commsMgr = reference;
     }
 
@@ -81,8 +80,7 @@ public class MRProtocolHandler
             }
             case PeerNodeMessageType.WORKER_START_MR_JOB:
             {
-            	System.out.println("ProcessPeerNodeMessage: WORKER_START_MR_JOB");
-                worker.startMRJob();
+                worker.startMRJob(msg);
                 break;
             }
             case PeerNodeMessageType.MR_JOB_COMPLETE:
@@ -340,7 +338,7 @@ public class MRProtocolHandler
     	{
     	   	PeerNodeMessageType msg = new PeerNodeMessageType();
         	msg.destNode = this.workerNodeIDs.get(i);
-        	msg.messageID = PeerNodeMessageType.GET_MR_JOB_DATASET;
+        	msg.messageID = PeerNodeMessageType.WORKER_START_MR_JOB;
 
         	//set block bounds
         	msg.dataSetBlockNumBeginIndex = currentBlockBegin;	

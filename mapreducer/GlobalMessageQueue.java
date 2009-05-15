@@ -69,7 +69,9 @@ public class GlobalMessageQueue
      */
     public void SendMsg(int destNodeID, PeerNodeMessageType msg)
     {
+    	//System.out.println("Global::SendMsg1");
         messageQueues.get(destNodeID).add(msg);
+        //System.out.println("Global::SendMsg2");
     }
 
     /**
