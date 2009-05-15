@@ -10,6 +10,8 @@ public class Worker extends Thread
 
     public MRProtocolHandler mrHandler;
     public int nodeID;
+    public String wordToSearch;
+    public int jobID;
     
     public Worker()
     {
@@ -38,23 +40,44 @@ public class Worker extends Thread
             // " is running");
         }
     }
-
-    // Method to handle PeerNodeMessageType.WORKER_START_MR_JOB
-    public void startMRJob(PeerNodeMessageType msg)
+    
+    public void retrieveJobData(PeerNodeMessageType msg)
     {
-    	System.out.println("Worker::startMRJob");
+    	System.out.println("Retrieve From Job Client: " + msg.jobClientID);
+     	
+    	//save jobID for now
+    	this.jobID = msg.mrJobID;
     	
-        // TODO Have worker begin to do the MR job.
-        // Sends the GET_MR_JOB_DATASET message to the job client
-    
-    
+    	//save the word to search
+    	wordToSearch = msg.wordToSearch;
     	
+    	// Sends the GET_MR_JOB_DATASET message to the job client
+    	this.mrHandler.WorkerGetDataset(msg.dataSetBlockNumBeginIndex, msg.dataSetBlockNumEndIndex, msg.jobClientID);
     }
 
     // Method to handle PeerNodeMessageType.MR_JOB_DATASET_REPLY
-    public void processDataset()
+    public void processDataset(byte[] dataSet)
     {
         // TODO The dataset for this worker has arrived, start the m/r job. Put
         // on queue for thread to process????
+    	
+    	System.out.println("Worker " + this.nodeID + " has received dataset and needs to search: " + wordToSearch);
+   
+    	//for now just process and get a result
+    	
+    	int count = 0;
+    	String data = new String(dataSet);
+    	String words[] = data.split(" ");
+    	
+    	for (int i = 0; i < words.length; i++)
+    	{
+    		if (words[i].equals(wordToSearch))
+    		{
+    			count = count + 1;
+    		}
+    	}
+    	
+    	//done the calculation, send reply
+    	mrHandler.WorkerJobComplete(jobID, count, this.mrHandler.GetMasterNode());
     }
 }

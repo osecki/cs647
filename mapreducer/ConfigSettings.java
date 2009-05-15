@@ -11,6 +11,7 @@ public class ConfigSettings
 {
     public static int numNodes;
     public static String workTextFile;
+    public static String wordToSearch;
     public static boolean selfHealing;
     public static boolean selfOptimization;
 
@@ -31,6 +32,8 @@ public class ConfigSettings
                 numNodes = Integer.parseInt(pro.getProperty("numNodes"));
 
                 workTextFile = pro.getProperty("workTextFile");
+
+                wordToSearch = pro.getProperty("wordToSearch");
                 
                 // load flag to determine if we want to self heal
                 selfHealing = Boolean.parseBoolean(pro.getProperty("selfHealing"));
