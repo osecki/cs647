@@ -177,7 +177,7 @@ public class MRProtocolHandler
 
                 // TODO: Need function in MRProtocolHandler class
             	
-            	//Save worker list
+            	//Save new worker list
             	for (int i = 0; i < msg.workerNodeIDs.length; i++)
             	{
             		//if this node is not already in my list and it's not me, add it
@@ -291,7 +291,7 @@ public class MRProtocolHandler
         msg.messageID = PeerNodeMessageType.MR_JOB_COMPLETE;
         msg.destNode = masterNodeID;
         msg.mrJobID = mrJobID;
-        msg.dataSetBlockNum = blockNum;
+        //msg.dataSetBlockNum = blockNum;
 
         commsMgr.SendMsg(msg);
     }
@@ -316,5 +316,46 @@ public class MRProtocolHandler
         msg.destNode = PeerNodeMessageType.BROADCAST_DEST_ID;
         msg.masterNodeID = commsMgr.GetNodeID();
         commsMgr.SendMsg(msg);
+    }
+    
+    //This method is called by the master to tell assign the workers
+    //chunks of work and instruct them to begin
+    //Input : words - total words in file
+    public void AssignWorkersJob(ArrayList<String> words)
+    {
+    	int totalWords = words.size();
+    	int currentBlockBegin = 0;
+    	int currentBlockEnd = 0;
+    	
+    	//for now, split as evenly across all workers - last worker may get more due to division
+    	//will need to calculate
+    	int numWordsPerWorker = words.size() / this.workerNodeIDs.size();
+    	  
+    	System.out.println("MRProtocolHandler::AssignWorkersJob - Total Words In File: " + totalWords + " To Split Among (" + this.workerNodeIDs.size() + ") Workers = Avg Chunk Size: " + numWordsPerWorker);
+
+    	//loop through each worker and send message w/ assigned chunk	
+    	for (int i = 0; i < this.workerNodeIDs.size(); i++)
+    	{
+    	   	PeerNodeMessageType msg = new PeerNodeMessageType();
+        	msg.destNode = this.workerNodeIDs.get(i);
+        	msg.messageID = PeerNodeMessageType.GET_MR_JOB_DATASET;
+
+        	//set block bounds
+        	msg.dataSetBlockNumBeginIndex = currentBlockBegin;	
+        	msg.dataSetBlockNumEndIndex = currentBlockBegin + numWordsPerWorker;
+        	msg.dataSetSize = numWordsPerWorker;
+        		
+        	//increment / decrement counts
+        	currentBlockBegin = currentBlockBegin + numWordsPerWorker + 1;
+        	
+        	//Account for last worker which may get assigned less
+        	if (msg.dataSetBlockNumEndIndex > totalWords)
+        	{
+        		msg.dataSetBlockNumEndIndex = totalWords;
+        		msg.dataSetSize = (msg.dataSetBlockNumEndIndex - msg.dataSetBlockNumBeginIndex);
+        	}
+        	
+    		System.out.println("WORKER " + i + " ASSIGNED: " + msg.dataSetBlockNumBeginIndex + " - " + msg.dataSetBlockNumEndIndex + " : " + msg.dataSetSize);
+    	}
     }
 }

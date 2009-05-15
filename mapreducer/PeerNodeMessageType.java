@@ -32,7 +32,8 @@ public class PeerNodeMessageType
     public int jobClientID; // know where to get data and put results
     public String srcFileName;
     public int dataSetSize; // size of the chunk of data to map/reduce
-    public int dataSetBlockNum; // Id of the particular chunk?
+    public int dataSetBlockNumBeginIndex; // Id of the particular chunk?
+    public int dataSetBlockNumEndIndex;
     public int mrJobID; // ID of the MR Job
 
     // Master Node Election Logic related fields
