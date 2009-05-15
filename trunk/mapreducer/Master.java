@@ -43,11 +43,11 @@ public class Master extends Thread
 
         System.out.println("SET MASTER");
 
-        while (true)
-        {
+        //while (true)
+        //{
             // System.out.println("Master Thread:  " + this.hashCode() +
             // " is running");
-        }
+        //}
     }
 
     // Method to handle PeerNodeMessageType.SUBMIT_MR_JOB
