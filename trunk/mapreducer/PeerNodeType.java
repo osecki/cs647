@@ -9,6 +9,8 @@ public class PeerNodeType
     public JobClient jobClient;
     public FaultAndHealth faultHealth;
     private PeerNodeRoleType roleType;
+    
+    public static int new_nodeID = 1;
 
     public PeerNodeType()
     {
@@ -18,7 +20,16 @@ public class PeerNodeType
         jobClient = new JobClient();
 
         // Instantiate the comms and fault modules
-        p2pComms = new P2PCommsManager(this.hashCode());
+        p2pComms = new P2PCommsManager(new_nodeID);
+
+        // Set node ID
+        master.nodeID = new_nodeID;
+        worker.nodeID = new_nodeID;
+        jobClient.nodeID = new_nodeID;
+        
+        // Increment new node ID
+        new_nodeID = new_nodeID + 1;
+        
         faultHealth = new FaultAndHealth();
 
         // Instantiate and configure the MRProtocolHandler

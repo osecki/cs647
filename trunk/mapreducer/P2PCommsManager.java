@@ -101,9 +101,7 @@ public class P2PCommsManager extends Thread
         }
         else
         {
-        	System.out.println("P2P::SendMsg1");
             msgQueue.SendMsg(msg.destNode, msg);
-            System.out.println("P2P::SendMsg2");
         }
     }
 }

@@ -9,7 +9,8 @@ import java.util.ArrayList;
 public class Master extends Thread
 {
     public MRProtocolHandler mrHandler;
-
+    public int nodeID;
+    
     public Master()
     {
 

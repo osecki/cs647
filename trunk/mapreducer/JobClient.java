@@ -4,7 +4,8 @@ public class JobClient extends Thread
 {
     // Pass down mrHandler
     MRProtocolHandler mrHandler;
-
+    public int nodeID;
+    
     boolean allowJobClientThreadToRun = false;
 
     public JobClient()

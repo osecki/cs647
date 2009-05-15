@@ -9,7 +9,8 @@ public class Worker extends Thread
      */
 
     public MRProtocolHandler mrHandler;
-
+    public int nodeID;
+    
     public Worker()
     {
 
@@ -28,7 +29,7 @@ public class Worker extends Thread
         this.setName(threadName);
 
         //BS TEST
-        this.mrHandler.sim_NewWorkerNodeConnected(this.hashCode());
+        this.mrHandler.sim_NewWorkerNodeConnected(this.nodeID);
         
         // Loop on a m/r queue, when stuff is in the queue, do m/r
         while (true)
@@ -39,10 +40,15 @@ public class Worker extends Thread
     }
 
     // Method to handle PeerNodeMessageType.WORKER_START_MR_JOB
-    public void startMRJob()
+    public void startMRJob(PeerNodeMessageType msg)
     {
+    	System.out.println("Worker::startMRJob");
+    	
         // TODO Have worker begin to do the MR job.
         // Sends the GET_MR_JOB_DATASET message to the job client
+    
+    
+    	
     }
 
     // Method to handle PeerNodeMessageType.MR_JOB_DATASET_REPLY
