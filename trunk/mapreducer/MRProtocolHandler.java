@@ -75,17 +75,20 @@ public class MRProtocolHandler
         {
             case PeerNodeMessageType.SUBMIT_MR_JOB:
             {
-                master.workerSubmittedJob(msg.srcFileName);
+                master.workerSubmittedJob(msg.srcFileName, msg.wordToSearch, msg.jobClientID);
                 break;
             }
             case PeerNodeMessageType.WORKER_START_MR_JOB:
             {
-                worker.startMRJob(msg);
+            	//retrieve job data from client
+            	worker.retrieveJobData(msg);
+            	
+                //worker.startMRJob(msg);
                 break;
             }
             case PeerNodeMessageType.MR_JOB_COMPLETE:
             {
-                master.jobComplete();
+                master.jobComplete(msg.mrJobID, msg.sourceNode, msg.result);
                 break;
             }
             case PeerNodeMessageType.MR_JOB_REDUCE_RESULT:
@@ -95,12 +98,12 @@ public class MRProtocolHandler
             }
             case PeerNodeMessageType.GET_MR_JOB_DATASET:
             {
-                jobClient.getDataset();
+                jobClient.getDataset(msg.dataSetBlockNumBeginIndex, msg.dataSetBlockNumEndIndex, msg.sourceNode);
                 break;
             }
             case PeerNodeMessageType.MR_JOB_DATASET_REPLY:
             {
-                worker.processDataset();
+                worker.processDataset(msg.dataChunk);
                 break;
             }
             case PeerNodeMessageType.HEART_BEAT_PING:
@@ -263,7 +266,7 @@ public class MRProtocolHandler
     }
 
     /* Used if JobClient node. */
-    public void SubmitMRJob(String filename)
+    public void SubmitMRJob(String filename, String wordToSearch)
     {
         PeerNodeMessageType msg;
 
@@ -273,6 +276,7 @@ public class MRProtocolHandler
         msg.destNode = masterNodeID;
         msg.jobClientID = commsMgr.GetNodeID();
         msg.srcFileName = filename;
+        msg.wordToSearch = wordToSearch;
         msg.sourceNodeType = nodeType;
 
         commsMgr.SendMsg(msg);
@@ -321,10 +325,10 @@ public class MRProtocolHandler
     //This method is called by the master to tell assign the workers
     //chunks of work and instruct them to begin
     //Input : words - total words in file
-    public void AssignWorkersJob(ArrayList<String> words)
+    public void AssignWorkersJob(int jobID, ArrayList<String> words, String wordToSearch, int jobClientID)
     {
     	int totalWords = words.size();
-    	int currentBlockBegin = 0;
+    	int currentBlockBegin = 1;
     	int currentBlockEnd = 0;
     	
     	//for now, split as evenly across all workers - last worker may get more due to division
@@ -337,9 +341,19 @@ public class MRProtocolHandler
     	for (int i = 0; i < this.workerNodeIDs.size(); i++)
     	{
     	   	PeerNodeMessageType msg = new PeerNodeMessageType();
+    	   	msg.mrJobID = jobID;
         	msg.destNode = this.workerNodeIDs.get(i);
         	msg.messageID = PeerNodeMessageType.WORKER_START_MR_JOB;
 
+        	//set job client ID
+        	msg.jobClientID = jobClientID;
+        	
+        	//save job ID
+        	msg.mrJobID = jobID;
+        	
+        	//Inform them of what to search for
+        	msg.wordToSearch = wordToSearch;
+        	
         	//set block bounds
         	msg.dataSetBlockNumBeginIndex = currentBlockBegin;	
         	msg.dataSetBlockNumEndIndex = currentBlockBegin + numWordsPerWorker;
@@ -357,8 +371,49 @@ public class MRProtocolHandler
         	
     		System.out.println("WORKER " + msg.destNode + " (" + i + ") ASSIGNED: " + msg.dataSetBlockNumBeginIndex + " - " + msg.dataSetBlockNumEndIndex + " : " + msg.dataSetSize);
     		
-    		//Send the message   FIX ME - WHY IS COMMSMGR NULL ?
+    		//ADD WORKER NODE ID TO MASTER JOB TABLE WITH FALSE
+    		//TO INDICATE NO RESPONSE YET
+    		
+    		
     		this.commsMgr.SendMsg(msg);
     	}
+    }
+    
+    //This method allows the worker to get the dataset from the jobclient
+    public void WorkerGetDataset(int begin, int end, int jobClientID)
+    {
+    	PeerNodeMessageType msg = new PeerNodeMessageType();
+    	msg.messageID = PeerNodeMessageType.GET_MR_JOB_DATASET;
+    	msg.dataSetBlockNumBeginIndex = begin;
+    	msg.dataSetBlockNumEndIndex = end;
+    	msg.destNode = jobClientID;
+    	this.commsMgr.SendMsg(msg);
+    }
+    
+    //This method allows the job client to send the dataset back to the worker
+    public void JobClientSendData(String returnData, int workerDest)
+    {   	
+    	PeerNodeMessageType msg = new PeerNodeMessageType();
+    	msg.messageID = PeerNodeMessageType.MR_JOB_DATASET_REPLY;
+    	msg.destNode = workerDest;
+    	msg.dataChunk = returnData.getBytes();
+    	this.commsMgr.SendMsg(msg);
+    }
+    
+    //This method allows the worker to tell the master he is done
+    public void WorkerJobComplete(int jobID, int results, int masterID)
+    {
+    	PeerNodeMessageType msg = new PeerNodeMessageType();
+    	msg.messageID = PeerNodeMessageType.MR_JOB_COMPLETE;
+    	msg.destNode = masterID;
+    	msg.mrJobID = jobID;
+    	msg.result = results;
+    	this.commsMgr.SendMsg(msg);
+    }
+    
+    //This method allows the master to tell the job client the work is complete
+    public void WorkComplete()
+    {
+    	
     }
 }

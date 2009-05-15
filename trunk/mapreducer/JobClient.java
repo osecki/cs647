@@ -1,5 +1,9 @@
 package mapreducer;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+
 public class JobClient extends Thread
 {
     // Pass down mrHandler
@@ -39,6 +43,8 @@ public class JobClient extends Thread
 
         boolean masterExists = false;
         String fileName = ConfigSettings.workTextFile;
+        String wordToSearch = ConfigSettings.wordToSearch;
+        
         while (true)
         {
             // Need to only submit job if a master exists
@@ -63,7 +69,7 @@ public class JobClient extends Thread
                     masterExists = true;
                     
                     //submit MR job
-                    mrHandler.SubmitMRJob(fileName);
+                    mrHandler.SubmitMRJob(fileName, wordToSearch);
                 }
 
             }
@@ -87,10 +93,46 @@ public class JobClient extends Thread
      * This method retrieves the particular block of data that the requesting
      * Worker node will perform the map/reduce
      */
-    public void getDataset()
+    public void getDataset(int beginIndex, int endIndex, int workerNodeDest)
     {
         // TODO Get the dataset and send back to the requesting worker using
         // the MR_JOB_DATASET_RESULT message
+    	
+    	System.out.println("JobClient::getDataSet");
+  	
+    	ArrayList<String> words = new ArrayList<String>();
+    	String text;
+    	String returnData = "";
+    	    	
+		try 
+		{
+			FileReader fileReader = new FileReader(ConfigSettings.workTextFile);
+			BufferedReader reader = new BufferedReader(fileReader);
+
+	    	while ((text = reader.readLine()) != null)
+	    	{
+	    		String[] temp = text.split(" ");
+	    
+	    		//Add each word to a list for splitting up into chunks later
+	    		for (int j = 0; j < temp.length; j++)
+	    			words.add(temp[j]);
+	    	}
+	    	
+	    	//add a padding word
+	    	words.add("");
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}    	
+    	
+		//Get the slice for the worker.  Just return it as a string for now
+    	for (int j = beginIndex; j <= endIndex; j++)
+    		returnData = returnData + words.get(j) + " ";
+       	
+    	//Send it out
+    	this.mrHandler.JobClientSendData(returnData, workerNodeDest);
+   	
     }
 
     /*

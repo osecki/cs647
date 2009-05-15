@@ -5,15 +5,25 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
 
 public class Master extends Thread
 {
     public MRProtocolHandler mrHandler;
     public int nodeID;
+    public static int jobID = 0;
+    
+    //job table which has key=workerNodeID;  value=whether they have responded with
+    //answer to task.
+    
+    //Hash table to maintain jobs
+    //Key = jobID
+    //Value = hashtable (key = WorkerID, value = result)
+    public Hashtable<Integer, Hashtable<Integer, Integer>> jobTable;
     
     public Master()
     {
-
     }
 
     public void SetMRProtocolHandlerRef(MRProtocolHandler reference)
@@ -38,8 +48,12 @@ public class Master extends Thread
     }
 
     // Method to handle PeerNodeMessageType.SUBMIT_MR_JOB
-    public void workerSubmittedJob(String srcFile)
+    public void workerSubmittedJob(String srcFile, String wordToSearch, int jobClientID)
     {
+    	//job table to keep track of jobID and workerIDs and results
+    	jobTable = new Hashtable<Integer, Hashtable<Integer, Integer>>();
+    	
+    	
         // Worker has submitted the job, now the master must divide up the work
         // TODO Put algorithm here to decide how to divide up work
     	
@@ -69,8 +83,11 @@ public class Master extends Thread
 			e.printStackTrace();
 		}
 
+		//Get a new JobID
+		jobID = jobID + 1;
+		
     	//Tell workers to get the data sets
-    	this.mrHandler.AssignWorkersJob(words);
+    	this.mrHandler.AssignWorkersJob(jobID, words, wordToSearch, jobClientID);
     }
 
     /*
@@ -80,8 +97,29 @@ public class Master extends Thread
      * workers have sent the JOB COMPLETE for a particular job, then notify the
      * Job Client
      */
-    public void jobComplete()
+    public void jobComplete(int jobID, int workerID, int result)
     {
+    	boolean done = true;
+    	
+    	System.out.println("Master::jobComplete Job " + jobID + " - " + "Worker " + workerID + " finished with results: " + result);
+/*
+    	//signify that we have a response from this worker
+    	jobTable.put(workerID, true);
+    	
+    	//check to see if all workers have answered
+    	Iterator<Integer> iter = jobTable.keySet().iterator();
+    	while (iter.hasNext())
+    	{
+    		if (jobTable.get(iter.next()) == false)
+    			done = false;
+    	}
+    	
         // TODO Tell the job client the work is complete
+    	
+    	if (done)
+    	{
+    		mrHandler.WorkComplete();
+    	}
+*/    	
     }
 }
