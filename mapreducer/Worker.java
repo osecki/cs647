@@ -34,11 +34,11 @@ public class Worker extends Thread
         this.mrHandler.sim_NewWorkerNodeConnected(this.nodeID);
         
         // Loop on a m/r queue, when stuff is in the queue, do m/r
-        while (true)
-        {
+        //while (true)
+        //{
             // System.out.println("Worker Thread:  " + this.hashCode() +
             // " is running");
-        }
+        //}
     }
     
     public void retrieveJobData(PeerNodeMessageType msg)
