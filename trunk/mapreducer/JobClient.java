@@ -141,8 +141,14 @@ public class JobClient extends Thread
      * The results of the various map/reduce results are handled here. This is
      * where the merge will be done.
      */
-    public void reduceResult()
+    public void reduceResult(ArrayList<Integer> results)
     {
         // TODO Method which calculates result of all data
+    	int total = 0;
+    	
+    	for (int i = 0; i < results.size(); i++)
+    		total = total + results.get(i);
+    	
+    	System.out.println("Job Client Received Worker Results - Answer: " + total);
     }
 }

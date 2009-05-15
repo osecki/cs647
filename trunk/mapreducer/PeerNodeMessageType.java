@@ -1,5 +1,7 @@
 package mapreducer;
 
+import java.util.ArrayList;
+
 public class PeerNodeMessageType
 {
     // Message IDs
@@ -36,6 +38,7 @@ public class PeerNodeMessageType
     public int dataSetBlockNumEndIndex;
     public String wordToSearch;
     public byte[] dataChunk;
+    public ArrayList<Integer> workerResults;
     public int result;
     public int mrJobID; // ID of the MR Job
 

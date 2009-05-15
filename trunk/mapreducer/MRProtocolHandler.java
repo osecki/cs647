@@ -94,7 +94,7 @@ public class MRProtocolHandler
             }
             case PeerNodeMessageType.MR_JOB_REDUCE_RESULT:
             {
-                jobClient.reduceResult();
+                jobClient.reduceResult(msg.workerResults);
                 break;
             }
             case PeerNodeMessageType.GET_MR_JOB_DATASET:
@@ -414,8 +414,13 @@ public class MRProtocolHandler
     }
     
     //This method allows the master to tell the job client the work is complete
-    public void WorkComplete()
+    public void WorkComplete(int jobClientID, int jobID, ArrayList<Integer> totalResults)
     {
-    	System.out.println("WORK DONE!!!");
+    	PeerNodeMessageType msg = new PeerNodeMessageType();
+    	msg.messageID = PeerNodeMessageType.MR_JOB_REDUCE_RESULT;
+    	msg.destNode = jobClientID;
+    	msg.mrJobID = jobID;
+    	msg.workerResults = totalResults;
+    	this.commsMgr.SendMsg(msg);
     }
 }
