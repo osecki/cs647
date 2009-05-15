@@ -179,7 +179,11 @@ public class MRProtocolHandler
             	
             	//Save worker list
             	for (int i = 0; i < msg.workerNodeIDs.length; i++)
-            		this.workerNodeIDs.add(msg.workerNodeIDs[i]);
+            	{
+            		//if this node is not already in my list and it's not me, add it
+            		if ((!this.workerNodeIDs.contains(msg.workerNodeIDs[i])) && (msg.workerNodeIDs[i] != this.hashCode()))
+            			this.workerNodeIDs.add(msg.workerNodeIDs[i]);
+            	}
             	
                 break;
             }
