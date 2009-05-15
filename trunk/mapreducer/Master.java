@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Master extends Thread
 {
@@ -40,9 +41,9 @@ public class Master extends Thread
     {
         // Worker has submitted the job, now the master must divide up the work
         // TODO Put algorithm here to decide how to divide up work
-
+    	
+    	ArrayList<String> words = new ArrayList<String>();
     	String text;
-    	int totalWords = 0;
     	
     	System.out.println("Master::workerSubmittedJob : " + srcFile);
     	
@@ -54,15 +55,21 @@ public class Master extends Thread
 			BufferedReader reader = new BufferedReader(fileReader);
 
 	    	while ((text = reader.readLine()) != null)
-	    		totalWords = totalWords + text.split(" ").length;
+	    	{
+	    		String[] temp = text.split(" ");
+	    
+	    		//Add each word to a list for splitting up into chunks later
+	    		for (int j = 0; j < temp.length; j++)
+	    			words.add(temp[j]);
+	    	}
 		} 
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 		}
 
-    	System.out.println("Total Words In File: " + totalWords + " To Split Among (" + mrHandler.getWorkerCount() + ") Workers");
-    	
+    	//Tell workers to get the data sets
+    	this.mrHandler.AssignWorkersJob(words);
     }
 
     /*
