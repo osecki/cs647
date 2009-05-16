@@ -13,6 +13,7 @@ public class ConfigSettings
     public static String workTextFile;
     public static String wordToSearch;
     public static String eventLogPath;
+    public static String eventLogLevel;
 
     public static void Init()
     {
@@ -35,6 +36,8 @@ public class ConfigSettings
                 wordToSearch = pro.getProperty("wordToSearch");
 
                 eventLogPath = pro.getProperty("eventLoggerFile");
+
+                eventLogLevel = pro.getProperty("eventLoggerLevel");
             }
         }
         catch (IOException e)

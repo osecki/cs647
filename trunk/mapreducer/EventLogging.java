@@ -19,7 +19,17 @@ public class EventLogging
 		SimpleLayout layout = new SimpleLayout();
 		FileAppender appender = new FileAppender(layout, ConfigSettings.eventLogPath, false);
 	    logger.addAppender(appender);
-	    logger.setLevel((Level) Level.DEBUG);
+	    
+	    if (ConfigSettings.eventLogLevel.equals("debug"))    
+	    	logger.setLevel((Level) Level.DEBUG);
+	    if (ConfigSettings.eventLogLevel.equals("info"))    
+	    	logger.setLevel((Level) Level.INFO);
+	    if (ConfigSettings.eventLogLevel.equals("error"))    
+	    	logger.setLevel((Level) Level.ERROR);
+	    if (ConfigSettings.eventLogLevel.equals("warn"))    
+	    	logger.setLevel((Level) Level.WARN);
+	    if (ConfigSettings.eventLogLevel.equals("fatal"))    
+	    	logger.setLevel((Level) Level.FATAL);
 	}
 	
 	public static void debug(String message)
