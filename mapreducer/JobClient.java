@@ -132,9 +132,7 @@ public class JobClient extends Thread
     {
         // TODO Get the dataset and send back to the requesting worker using
         // the MR_JOB_DATASET_RESULT message
-    	
-    	System.out.println("JobClient::getDataSet");
-  	
+    	  	
     	ArrayList<String> words = new ArrayList<String>();
     	String text;
     	String returnData = "";
