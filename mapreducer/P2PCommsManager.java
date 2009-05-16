@@ -69,7 +69,7 @@ public class P2PCommsManager extends Thread
             if (allowNodeToRun == true)
             {
                 try
-                {
+                {               	
                 	
                     // Read message queue
                     PeerNodeMessageType msg = msgQueue.GetNextMsg(nodeID);
@@ -80,12 +80,17 @@ public class P2PCommsManager extends Thread
                     {
                         mrHandler.ProcessPeerNodeMessage(msg);
                     }
+                    
+                 // We are using the comms mgr loop to drive other activities that need to be done
+                	// on a regular interval like heart beat sending(master node) and checking to see
+                	// if master is still alive(worker node)
+                	mrHandler.PerformHouseKeeping();
 
-                    Thread.sleep(100);
+                    Thread.sleep(250);
                 }
                 catch (Exception ex)
                 {
-                    System.out.println("Exception in P2PCommMsg::Run " + ex.getMessage());
+                    System.out.println(threadName + " Exception in P2PCommMsg::Run " + ex.getMessage());
                 }
             }
         }
