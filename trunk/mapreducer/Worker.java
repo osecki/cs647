@@ -13,9 +13,12 @@ public class Worker extends Thread
     public String wordToSearch;
     public int jobID;
     
+    public byte[] dataSet;
+    public boolean jobDataAvailable;
+    
     public Worker()
     {
-
+      
     }
 
     public void SetMRProtocolHandlerRef(MRProtocolHandler reference)
@@ -29,16 +32,29 @@ public class Worker extends Thread
         String threadName = mrHandler.GetNodeName();
         EventLogging.info("Starting Worker Thread => " + threadName);
         this.setName(threadName);
-
-        //BS TEST
-        this.mrHandler.sim_NewWorkerNodeConnected(this.nodeID);
+        
+        this.jobDataAvailable = false;
         
         // Loop on a m/r queue, when stuff is in the queue, do m/r
-        //while (true)
-        //{
+        while (true)
+        {
             // System.out.println("Worker Thread:  " + this.hashCode() +
             // " is running");
-        //}
+        	
+        	try 
+        	{
+        		if(this.jobDataAvailable == true)
+        		{
+			       processDataset(dataSet);
+        		}
+			    
+        		Thread.sleep(10000);
+			} 
+        	catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} // Sleep 10 seconds
+        }
     }
     
     public void retrieveJobData(PeerNodeMessageType msg)
@@ -78,6 +94,7 @@ public class Worker extends Thread
     	}
     	
     	//done the calculation, send reply
+    	this.jobDataAvailable = false;
     	mrHandler.WorkerJobComplete(jobID, count, this.mrHandler.GetMasterNode());
     }
 }
