@@ -18,6 +18,8 @@ public class PeerNodeType
         master = new Master();
         worker = new Worker();
         jobClient = new JobClient();
+        
+        faultHealth = new FaultAndHealth();
 
         // Instantiate the comms and fault modules
         p2pComms = new P2PCommsManager(new_nodeID);
@@ -29,8 +31,6 @@ public class PeerNodeType
         
         // Increment new node ID
         new_nodeID = new_nodeID + 1;
-        
-        faultHealth = new FaultAndHealth();
 
         // Instantiate and configure the MRProtocolHandler
         mrHandler = new MRProtocolHandler();
@@ -51,6 +51,10 @@ public class PeerNodeType
 
         // Set worker reference to the mrHandler
         worker.SetMRProtocolHandlerRef(mrHandler);
+        
+        faultHealth.SetMRProtocolHandlerRef(mrHandler);
+        faultHealth.SetP2PCommsManagerReference(p2pComms);
+
 
         // TODO: Still need references in FaultAndHealth ????
     }
@@ -98,5 +102,15 @@ public class PeerNodeType
     public void sim_InitialMasterNodeIDBroadcast()
     {
         mrHandler.BroadcastNewMasterNode();
+    }
+    
+    public void sim_SetNewWorkerNode(int nodeID)
+    {
+    	mrHandler.sim_NewWorkerNodeConnected(nodeID);
+    }
+    
+    public void sim_InitialBroadcastWorkerNodeList()
+    {
+    	mrHandler.BroadcastWorkerNodeList();
     }
 }
