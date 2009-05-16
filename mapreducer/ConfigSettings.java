@@ -12,6 +12,7 @@ public class ConfigSettings
     public static int numNodes;
     public static String workTextFile;
     public static String wordToSearch;
+    public static String eventLogPath;
 
     public static void Init()
     {
@@ -33,6 +34,7 @@ public class ConfigSettings
 
                 wordToSearch = pro.getProperty("wordToSearch");
 
+                eventLogPath = pro.getProperty("eventLoggerFile");
             }
         }
         catch (IOException e)

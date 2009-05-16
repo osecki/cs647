@@ -1,5 +1,6 @@
 package mapreducer;
 
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -10,9 +11,9 @@ public class Simulator implements Runnable
     public ConfigSettings config;
     public Hashtable<Integer, PeerNodeType> peerNodes;
 
-    public Simulator()
+    public Simulator() throws IOException
     {
-
+    	eventLogger = new EventLogging();		//initialize logger class
     }
 
     public void run()
