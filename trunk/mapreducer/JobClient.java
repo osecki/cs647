@@ -39,9 +39,10 @@ public class JobClient extends Thread
     public void run()
     {
         String threadName = mrHandler.GetNodeName();
-        System.out.println("Starting Thread => " + threadName);
         this.setName(threadName);
 
+        EventLogging.info("Starting Thread => " + threadName);
+        
         boolean masterExists = false;
         String fileName = ConfigSettings.workTextFile;
         String wordToSearch = ConfigSettings.wordToSearch;

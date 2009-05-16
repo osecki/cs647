@@ -37,17 +37,9 @@ public class Master extends Thread
     // Method that must be implemented to run worker as a thread
     public void run()
     {
-        // Set reference that we're the master
-        // mrHandler.SetMasterReference(this);
-        mrHandler.UpdateMasterNode(this.hashCode());
-
-        System.out.println("SET MASTER");
-
-        //while (true)
-        //{
-            // System.out.println("Master Thread:  " + this.hashCode() +
-            // " is running");
-        //}
+        String threadName = mrHandler.GetNodeName();
+        EventLogging.info("Starting Master Thread => " + threadName);
+        mrHandler.UpdateMasterNode(this.nodeID);
     }
 
     // Method to handle PeerNodeMessageType.SUBMIT_MR_JOB
