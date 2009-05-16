@@ -20,13 +20,30 @@ public class EventLogging
 		FileAppender appender = new FileAppender(layout, ConfigSettings.eventLogPath, false);
 	    logger.addAppender(appender);
 	    logger.setLevel((Level) Level.DEBUG);
-		
-	      logger.debug("Here is some DEBUG");
-	      logger.info("Here is some INFO");
-	      logger.warn("Here is some WARN");
-	      logger.error("Here is some ERROR");
-	      logger.fatal("Here is some FATAL");
-
 	}
 	
+	public static void debug(String message)
+	{
+		logger.debug(message);
+	}
+	
+	public static void info(String message)
+	{
+		logger.info(message);
+	}
+	
+	public static void warn(String message)
+	{
+		logger.warn(message);
+	}
+	
+	public static void error(String message)
+	{
+		logger.error(message);
+	}
+	
+	public static void fatal(String message)
+	{
+		logger.fatal(message);
+	}
 }
