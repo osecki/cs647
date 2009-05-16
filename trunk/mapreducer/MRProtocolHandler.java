@@ -69,6 +69,20 @@ public class MRProtocolHandler
     {
         return nodeName;
     }
+    
+    public void PerformHouseKeeping()
+    {
+    	if(this.nodeType == PeerNodeRoleType.WORKER)
+    	{
+    	   // Run routine to check that master pings are being recieved
+    		faultHealth.checkMasterHeartBeatPing();
+    	}
+    	if(this.nodeType == PeerNodeRoleType.MASTER)
+    	{
+    	   // Run routine to send ping to workers
+    		faultHealth.SendPing();
+    	}
+    }
 
     public void ProcessPeerNodeMessage(PeerNodeMessageType msg)
     {
@@ -104,17 +118,23 @@ public class MRProtocolHandler
             }
             case PeerNodeMessageType.MR_JOB_DATASET_REPLY:
             {
-                worker.processDataset(msg.dataChunk);
+            	worker.dataSet = msg.dataChunk;
+            	worker.jobDataAvailable = true;
+                // worker.processDataset(msg.dataChunk);
                 break;
             }
             case PeerNodeMessageType.HEART_BEAT_PING:
             {
-                faultHealth.sendPing();
+            	if(nodeType == PeerNodeRoleType.WORKER)
+            	{                   
+                   faultHealth.processHeartBeatPing(this.masterNodeID);
+            	}
+                
                 break;
             }
             case PeerNodeMessageType.HEART_BEAT_REPLY:
-            {
-                faultHealth.replyPing();
+            {            	
+                faultHealth.processHeartBeatPingReply(msg.sourceNode);
                 break;
             }
             case PeerNodeMessageType.MASTER_NODE_FAILED:
@@ -178,17 +198,23 @@ public class MRProtocolHandler
             case PeerNodeMessageType.UPDATE_WORKER_NODE_LIST:
             {
                 // The Worker node and Master node need to maintain this list
-
-                // TODO: Need function in MRProtocolHandler class
-            	
-            	//Save new worker list
-            	for (int i = 0; i < msg.workerNodeIDs.length; i++)
+            	if((nodeType == PeerNodeRoleType.MASTER) || 
+            	  (nodeType == PeerNodeRoleType.WORKER))
             	{
-            		//if this node is not already in my list and it's not me, add it
-            		if ((!this.workerNodeIDs.contains(msg.workerNodeIDs[i])) && (msg.workerNodeIDs[i] != this.hashCode()))
-            			this.workerNodeIDs.add(msg.workerNodeIDs[i]);
-            	}
+            		this.workerNodeIDs.clear();
+            		
+            		
+            	   //Save new worker list
+            	   for (int i = 0; i < msg.workerNodeIDs.length; i++)
+            	   {
+            		   //if this node is not already in my list and it's not me, add it
+            	//	   if ((!this.workerNodeIDs.contains(msg.workerNodeIDs[i])) && (msg.workerNodeIDs[i] != this.hashCode()))
+            			   this.workerNodeIDs.add(msg.workerNodeIDs[i]);
+               	   }
             	
+            	   // Need to let the FaultHealt object know who the worker nodes are
+            	   faultHealth.UpdateWorkerNodeList(workerNodeIDs);
+            	}
                 break;
             }
         }
@@ -230,17 +256,10 @@ public class MRProtocolHandler
      */
     public void sim_NewWorkerNodeConnected(int nodeID)
     {
-        workerNodeIDs.add(nodeID);
-        
-        // TODO: Notify all peer nodes of new node
-        
-        //BS TEST CODE
-        PeerNodeMessageType msg = new PeerNodeMessageType();
-        msg.destNode = PeerNodeMessageType.BROADCAST_DEST_ID;
-        msg.messageID = PeerNodeMessageType.UPDATE_WORKER_NODE_LIST;
-        msg.workerNodeIDs = workerNodeIDs.toArray(new Integer[workerNodeIDs.size()]);
-        commsMgr.SendMsg(msg);        
+        workerNodeIDs.add(nodeID);        
     }
+    
+
 
     /*
      * Used if Master Node. Called by FaultAndHealth if worker node does not
@@ -321,6 +340,15 @@ public class MRProtocolHandler
         msg.destNode = PeerNodeMessageType.BROADCAST_DEST_ID;
         msg.masterNodeID = commsMgr.GetNodeID();
         commsMgr.SendMsg(msg);
+    }
+
+    public void BroadcastWorkerNodeList()
+    {
+        PeerNodeMessageType msg = new PeerNodeMessageType();
+        msg.destNode = PeerNodeMessageType.BROADCAST_DEST_ID;
+        msg.messageID = PeerNodeMessageType.UPDATE_WORKER_NODE_LIST;
+        msg.workerNodeIDs = workerNodeIDs.toArray(new Integer[workerNodeIDs.size()]);
+        commsMgr.SendMsg(msg);    	
     }
     
     //This method is called by the master to tell assign the workers
