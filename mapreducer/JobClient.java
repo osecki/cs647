@@ -102,6 +102,7 @@ public class JobClient extends Thread
             		}    	  
                     
                     
+            		EventLogging.info("Job client submitted job '" + fileName + "' searching for '" + wordToSearch + "'");
                     
                     //submit MR job
                     mrHandler.SubmitMRJob(fileName, wordToSearch);
