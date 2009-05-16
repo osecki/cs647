@@ -10,6 +10,8 @@ public class Simulator implements Runnable
     public StatisticsLogging statLogger;
     public ConfigSettings config;
     public Hashtable<Integer, PeerNodeType> peerNodes;
+    
+    public PeerNodeType masterNode;
 
     public Simulator() throws IOException
     {
@@ -48,12 +50,6 @@ public class Simulator implements Runnable
         // Randomly select initial job client
         selectRandomMaster();
 
-        // Run nodes
-        // This will start the communications thread and the map/reduce thread
-        // in the Worker Node and the JobClient thread which discovers the
-        // master node
-        runNodeThreads();
-
         // Next, we need to notify the Worker and JobClient nodes who the master
         // node is. We need to do this now because we need to make sure all
         // nodes
@@ -62,19 +58,43 @@ public class Simulator implements Runnable
         // new
         // Master is elected.
         // Find the master node.
-        Enumeration<PeerNodeType> e = peerNodes.elements();
+        masterNode.sim_InitialMasterNodeIDBroadcast();
+        
+        //Enumeration<PeerNodeType> e = peerNodes.elements();
+        //PeerNodeType masterNode;
+        //while (e.hasMoreElements())
+        //{
+           // masterNode = e.nextElement();
 
-        while (e.hasMoreElements())
+            //if (masterNode.getRoleType() == PeerNodeRoleType.MASTER)
+            //{
+            //	masterNode.sim_InitialMasterNodeIDBroadcast();
+             //   break;
+            //}
+        //}
+        
+        // Need to propagate the worker node list
+        Enumeration<PeerNodeType> we = peerNodes.elements();
+        PeerNodeType workerNode;
+        while (we.hasMoreElements())
         {
-            PeerNodeType node = e.nextElement();
-
-            if (node.getRoleType() == PeerNodeRoleType.MASTER)
+            workerNode = we.nextElement();
+            
+            if (workerNode.getRoleType() == PeerNodeRoleType.WORKER)
             {
-                node.sim_InitialMasterNodeIDBroadcast();
-                break;
+               masterNode.sim_SetNewWorkerNode(workerNode.p2pComms.GetNodeID());
             }
-        }
+        }        
+        masterNode.sim_InitialBroadcastWorkerNodeList();
+        
+        
 
+        // Run nodes
+        // This will start the communications thread and the map/reduce thread
+        // in the Worker Node and the JobClient thread which discovers the
+        // master node
+        runNodeThreads();
+        
         // TODO: Are there other things to do here ???
 
     }
@@ -102,6 +122,7 @@ public class Simulator implements Runnable
             {
                 peerNodes.get(masterClientKey).setRoleType(PeerNodeRoleType.MASTER);
                 peerNodes.get(masterClientKey).setNodeName();
+                masterNode = peerNodes.get(masterClientKey);
                 foundMaster = true;
             }
         }
