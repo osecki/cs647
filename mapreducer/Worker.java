@@ -27,7 +27,7 @@ public class Worker extends Thread
     public void run()
     {
         String threadName = mrHandler.GetNodeName();
-        System.out.println("Starting Worker Thread => " + threadName);
+        EventLogging.info("Starting Worker Thread => " + threadName);
         this.setName(threadName);
 
         //BS TEST
