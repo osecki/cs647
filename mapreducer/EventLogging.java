@@ -1,6 +1,8 @@
 package mapreducer;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
@@ -11,6 +13,7 @@ import org.apache.log4j.SimpleLayout;
 public class EventLogging 
 {
 	static Logger logger = Logger.getLogger(EventLogging.class);
+	static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
 	
 	public EventLogging () throws IOException
 	{
@@ -32,28 +35,35 @@ public class EventLogging
 	    	logger.setLevel((Level) Level.FATAL);
 	}
 	
+	private static String now() 
+	{
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+		return sdf.format(cal.getTime());
+	}
+	
 	public static void debug(String message)
 	{
-		logger.debug(message);
+		logger.debug(now() + " : " + message);
 	}
 	
 	public static void info(String message)
 	{
-		logger.info(message);
+		logger.info(now() + " : " + message);
 	}
 	
 	public static void warn(String message)
 	{
-		logger.warn(message);
+		logger.warn(now() + " : " + message);
 	}
 	
 	public static void error(String message)
 	{
-		logger.error(message);
+		logger.error(now() + " : " + message);
 	}
 	
 	public static void fatal(String message)
 	{
-		logger.fatal(message);
+		logger.fatal(now() + " : " + message);
 	}
 }
