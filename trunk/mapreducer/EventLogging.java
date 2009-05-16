@@ -17,7 +17,7 @@ public class EventLogging
 		BasicConfigurator.configure();
 	
 		SimpleLayout layout = new SimpleLayout();
-		FileAppender appender = new FileAppender(layout, ConfigSettings.eventLogPath, true);
+		FileAppender appender = new FileAppender(layout, ConfigSettings.eventLogPath, false);
 	    logger.addAppender(appender);
 	    logger.setLevel((Level) Level.DEBUG);
 		
