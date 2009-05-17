@@ -14,6 +14,7 @@ public class ConfigSettings
     public static String wordToSearch;
     public static String eventLogPath;
     public static String eventLogLevel;
+    public static String scenarioToRun;
 
     public static void Init()
     {
@@ -38,6 +39,8 @@ public class ConfigSettings
                 eventLogPath = pro.getProperty("eventLoggerFile");
 
                 eventLogLevel = pro.getProperty("eventLoggerLevel");
+
+                scenarioToRun = pro.getProperty("scenarioToRun");
             }
         }
         catch (IOException e)
