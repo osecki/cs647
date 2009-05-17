@@ -91,7 +91,8 @@ public class PeerNodeType
         }
         else if (roleType == PeerNodeRoleType.MASTER)
         {
-            // master.start();
+        	//put this in to get some debug info to show up
+            master.start();
         }
         else if (roleType == PeerNodeRoleType.WORKER)
         {

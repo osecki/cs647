@@ -55,7 +55,7 @@ public class Master extends Thread
     	ArrayList<String> words = new ArrayList<String>();
     	String text;
     	
-    	System.out.println("Master::workerSubmittedJob : " + srcFile);
+    	EventLogging.debug("Master received job request - splitting job among workers");
     	
     	//Maybe read the number of words in the file and split among workers for now
     	
@@ -103,7 +103,7 @@ public class Master extends Thread
     	boolean done = true;
     	ArrayList<Integer> totalResults = new ArrayList<Integer>();
     	
-    	System.out.println("Master::jobComplete Job " + jobID + " - " + "Worker " + workerID + " finished with results: " + result);
+    	EventLogging.info("Master has received worker " + workerID + " results");
 
     	//Update job table with result
     	jobTable.get(jobID).put(workerID, result);
@@ -126,6 +126,8 @@ public class Master extends Thread
         // Tell the job client the work is complete
     	if (done)
     	{
+        	EventLogging.info("Master notified that all workers are finished");
+    		
     		int jobClientID = this.jobClientMap.get(jobID);
     		mrHandler.WorkComplete(jobClientID, jobID, totalResults);
     	}
