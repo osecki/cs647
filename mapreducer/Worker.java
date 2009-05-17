@@ -1,6 +1,7 @@
 package mapreducer;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Worker extends Thread
 {
@@ -17,11 +18,16 @@ public class Worker extends Thread
     
     public byte[] dataSet;
     public boolean jobDataAvailable;
+    
+    //Data structure of masters work breakdown
     private ArrayList<JobSubmission> jobAssignments;
+    
+    //Queue to manage tasks that worker needs to do
+    private LinkedList<JobSubmission> myJobList;
     
     public Worker()
     {
-      
+    	myJobList = new LinkedList<JobSubmission>();
     }
 
     public void SetMRProtocolHandlerRef(MRProtocolHandler reference)
@@ -99,6 +105,17 @@ public class Worker extends Thread
     	//done the calculation, send reply
     	this.jobDataAvailable = false;
     	mrHandler.WorkerJobComplete(jobID, count, this.mrHandler.GetMasterNode());
+    	
+    	
+    	//TO DO:
+    	//since we are done the job, if we have more jobs on the queue,
+    	//get the next one and process
+    	
+    	if (myJobList.size() > 0)
+    	{
+    		JobSubmission newJob = myJobList.removeFirst();		//get the new job 
+        	this.mrHandler.WorkerGetDataset(newJob.dataSetBlockNumBeginIndex, newJob.dataSetBlockNumEndIndex, newJob.jobClientID);    	
+    	}
     }
     
     //This method is used when the master propogates job assignments to all other workers
@@ -107,5 +124,13 @@ public class Worker extends Thread
     {
     	EventLogging.debug("Worker " + this.nodeID + " has saved master job assignment");
     	jobAssignments = jobAssign;
+    }
+ 
+    //This method is used when some other worker fails and the master has detected it
+    //When the master assigns the lost chunk to me - an existing worker
+    //I will queue it and process
+    public void QueueNewJobAssignment(JobSubmission job)
+    {
+    	myJobList.add(job);
     }
 }
