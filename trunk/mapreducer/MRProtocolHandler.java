@@ -90,7 +90,10 @@ public class MRProtocolHandler
         {
         	case PeerNodeMessageType.PROPOGATE_JOB_ASSIGNMENTS:
         	{
-        		//TO DO:  implement me
+        		if (nodeType == PeerNodeRoleType.WORKER)
+        		{
+        			worker.saveJobAssignments(msg.jobAssignment);
+        		}
         		break;
         	}
             case PeerNodeMessageType.SUBMIT_MR_JOB:
@@ -476,6 +479,7 @@ public class MRProtocolHandler
     	PeerNodeMessageType msg = new PeerNodeMessageType();
     	msg.messageID = PeerNodeMessageType.PROPOGATE_JOB_ASSIGNMENTS;
     	msg.destNode = PeerNodeMessageType.BROADCAST_DEST_ID;
+    	msg.jobAssignment = jobAssignments;
     	this.commsMgr.SendMsg(msg);
     }
 }
