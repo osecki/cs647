@@ -408,11 +408,7 @@ public class MRProtocolHandler
         	}
         	
     		EventLogging.info("WORKER " + msg.destNode + " Assigned: " + msg.dataSetBlockNumBeginIndex + " - " + msg.dataSetBlockNumEndIndex);
-    		
-    		//ADD WORKER NODE ID TO MASTER JOB TABLE WITH FALSE
-    		//TO INDICATE NO RESPONSE YET
-    		master.jobTable.get(jobID).put(msg.destNode, -1);
-    		
+ 		
     		//Save job information in a structure such that we can propogate to all 
     		//workers
     		JobSubmission jobSub = new JobSubmission();
@@ -420,6 +416,8 @@ public class MRProtocolHandler
     		jobSub.jobClientID = jobClientID;
     		jobSub.dataSetBlockNumBeginIndex = msg.dataSetBlockNumBeginIndex;
     		jobSub.dataSetBlockNumEndIndex = msg.dataSetBlockNumEndIndex;
+    		jobSub.workerNodeID = msg.destNode;
+    		jobSub.result = -1;
     		
     		//Add assignment to master nodes list
     		this.master.jobAssignments.add(jobSub);    		

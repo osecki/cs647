@@ -7,4 +7,5 @@ public class JobSubmission
 	public int workerNodeID;
 	public int dataSetBlockNumBeginIndex;	
 	public int dataSetBlockNumEndIndex;
+	public int result;
 }

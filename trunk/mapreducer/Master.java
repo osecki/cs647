@@ -17,15 +17,6 @@ public class Master extends Thread
 	//List of all workers assignments for this job submission
 	public ArrayList<JobSubmission> jobAssignments;
     
-    
-    //job table which has key=workerNodeID;  value=whether they have responded with
-    //answer to task.
-    
-    //Hash table to maintain jobs
-    //Key = jobID
-    //Value = hashtable (key = WorkerID, value = result)
-    public Hashtable<Integer, Hashtable<Integer, Integer>> jobTable;
-    
     //Table to keep key=jobID value=jobClientID
     public Hashtable<Integer, Integer> jobClientMap = new Hashtable<Integer,Integer>();
     
@@ -49,12 +40,7 @@ public class Master extends Thread
     // Method to handle PeerNodeMessageType.SUBMIT_MR_JOB
     public void workerSubmittedJob(String srcFile, String wordToSearch, int jobClientID)
     {
-    	 jobAssignments = new ArrayList<JobSubmission>();
-    	
-    	
-    	//job table to keep track of jobID and workerIDs and results
-    	jobTable = new Hashtable<Integer, Hashtable<Integer, Integer>>();
-    	
+    	 jobAssignments = new ArrayList<JobSubmission>();    	
     	
         // Worker has submitted the job, now the master must divide up the work
         // TODO Put algorithm here to decide how to divide up work
@@ -91,9 +77,6 @@ public class Master extends Thread
 		//create new entry in job client map
 		this.jobClientMap.put(jobID, jobClientID);
 		
-		//create new entry in job table
-		this.jobTable.put(jobID, new Hashtable<Integer, Integer>());
-		
     	//Tell workers to get the data sets
     	this.mrHandler.AssignWorkersJob(jobID, words, wordToSearch, jobClientID);
     	
@@ -115,29 +98,27 @@ public class Master extends Thread
     	
     	EventLogging.info("Master has received worker " + workerID + " results");
 
-    	//Update job table with result
-    	jobTable.get(jobID).put(workerID, result);
-    	
-    	//check to see if all workers have answered
-    	Iterator<Integer> iter = jobTable.get(jobID).keySet().iterator();
-    	while (iter.hasNext())
+    	for (int i = 0; i < jobAssignments.size(); i++)
     	{
-    		int workerResult = jobTable.get(jobID).get(iter.next());
+    		JobSubmission job = jobAssignments.get(i);
+    		    		
+    		//update our result
+    		if ((job.workerNodeID == workerID) && (job.jobID == jobID))
+    			job.result = result;
     		
-    		//add result to results list for sending back to job client
-    		totalResults.add(workerResult);
+    		//check to see if all workers are done
+    		if (job.jobID == jobID)
+    			if (job.result == -1)
+    				done = false;
     		
-    		if (workerResult == -1)
-    		{
-    			done = false;
-    		}
+    		totalResults.add(job.result);
     	}
     	
         // Tell the job client the work is complete
     	if (done)
     	{
         	EventLogging.info("Master notified that all workers are finished");
-    		
+    			
     		int jobClientID = this.jobClientMap.get(jobID);
     		mrHandler.WorkComplete(jobClientID, jobID, totalResults);
     	}
