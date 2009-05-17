@@ -164,7 +164,7 @@ public class MRProtocolHandler
                 if (nodeType != PeerNodeRoleType.MASTER)
                 {
                     UpdateMasterNode(msg.masterNodeID);
-                    System.out.println(nodeName + " saving new master node id:"
+                   EventLogging.debug(nodeName + " saving new master node id:"
                             + String.valueOf(masterNodeID));
                 }
                 break;
@@ -176,7 +176,7 @@ public class MRProtocolHandler
 
                 if (nodeType == PeerNodeRoleType.MASTER)
                 {
-                    System.out.println("Master received the master_node_query");
+                    EventLogging.debug("Master received the master_node_query");
 
                     replyMsg = new PeerNodeMessageType();
 
@@ -364,7 +364,7 @@ public class MRProtocolHandler
     	//will need to calculate
     	int numWordsPerWorker = words.size() / this.workerNodeIDs.size();
     	  
-    	System.out.println("MRProtocolHandler::AssignWorkersJob - Total Words In File: " + totalWords + " To Split Among (" + this.workerNodeIDs.size() + ") Workers = Avg Chunk Size: " + numWordsPerWorker);
+    	EventLogging.debug("MRProtocolHandler::AssignWorkersJob - Total Words In File: " + totalWords + " To Split Among (" + this.workerNodeIDs.size() + ") Workers = Avg Chunk Size: " + numWordsPerWorker);
 
     	//loop through each worker and send message w/ assigned chunk	
     	for (int i = 0; i < this.workerNodeIDs.size(); i++)
@@ -398,7 +398,7 @@ public class MRProtocolHandler
         		msg.dataSetSize = (msg.dataSetBlockNumEndIndex - msg.dataSetBlockNumBeginIndex);
         	}
         	
-    		System.out.println("WORKER " + msg.destNode + " (" + i + ") ASSIGNED: " + msg.dataSetBlockNumBeginIndex + " - " + msg.dataSetBlockNumEndIndex + " : " + msg.dataSetSize);
+    		EventLogging.info("WORKER " + msg.destNode + " Assigned: " + msg.dataSetBlockNumBeginIndex + " - " + msg.dataSetBlockNumEndIndex);
     		
     		//ADD WORKER NODE ID TO MASTER JOB TABLE WITH FALSE
     		//TO INDICATE NO RESPONSE YET

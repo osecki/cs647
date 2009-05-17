@@ -58,9 +58,7 @@ public class Worker extends Thread
     }
     
     public void retrieveJobData(PeerNodeMessageType msg)
-    {
-    	System.out.println("Retrieve From Job Client: " + msg.jobClientID);
-     	
+    {     	
     	//save jobID for now
     	this.jobID = msg.mrJobID;
     	
@@ -77,7 +75,7 @@ public class Worker extends Thread
         // TODO The dataset for this worker has arrived, start the m/r job. Put
         // on queue for thread to process????
     	
-    	System.out.println("Worker " + this.nodeID + " has received dataset and needs to search: " + wordToSearch);
+    	EventLogging.info("Worker " + this.nodeID + " is beginning processing");
    
     	//for now just process and get a result
     	
@@ -92,6 +90,8 @@ public class Worker extends Thread
     			count = count + 1;
     		}
     	}
+
+    	EventLogging.info("Worker " + this.nodeID + " has completed processing: " + count);
     	
     	//done the calculation, send reply
     	this.jobDataAvailable = false;

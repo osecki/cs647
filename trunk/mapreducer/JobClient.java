@@ -41,7 +41,7 @@ public class JobClient extends Thread
         String threadName = mrHandler.GetNodeName();
         this.setName(threadName);
 
-        EventLogging.info("Starting Thread => " + threadName);
+        EventLogging.info("Starting Client Thread => " + threadName);
         
         boolean masterExists = false;
         String fileName = ConfigSettings.workTextFile;
@@ -69,7 +69,7 @@ public class JobClient extends Thread
 
                 if (mrHandler.GetMasterNode() > 0)
                 {
-                    System.out.println("FOUND MASTER!!! ");
+                    EventLogging.debug("FOUND MASTER!!! ");
                     masterExists = true;
                     
                 	String text;
@@ -184,6 +184,6 @@ public class JobClient extends Thread
     	for (int i = 0; i < results.size(); i++)
     		total = total + results.get(i);
     	
-    	System.out.println("Job Client Received Worker Results - Answer: " + total);
+    	EventLogging.info("Job Client Received Worker Results - Answer: " + total);
     }
 }

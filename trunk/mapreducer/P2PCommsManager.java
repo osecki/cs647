@@ -59,7 +59,7 @@ public class P2PCommsManager extends Thread
         boolean runLoop = true;
 
         String threadName = mrHandler.GetNodeName() + ":CommsMgr";
-        System.out.println("Starting Thread => " + threadName);
+        //System.out.println("Starting Thread => " + threadName);
 
         this.setName(threadName);
 
