@@ -1,5 +1,7 @@
 package mapreducer;
 
+import java.util.ArrayList;
+
 public class Worker extends Thread
 {
     /*
@@ -15,6 +17,7 @@ public class Worker extends Thread
     
     public byte[] dataSet;
     public boolean jobDataAvailable;
+    private ArrayList<JobSubmission> jobAssignments;
     
     public Worker()
     {
@@ -96,5 +99,13 @@ public class Worker extends Thread
     	//done the calculation, send reply
     	this.jobDataAvailable = false;
     	mrHandler.WorkerJobComplete(jobID, count, this.mrHandler.GetMasterNode());
+    }
+    
+    //This method is used when the master propogates job assignments to all other workers
+    //The worker saves this just in case they are promoted to a master
+    public void saveJobAssignments(ArrayList<JobSubmission> jobAssign)
+    {
+    	EventLogging.debug("Worker " + this.nodeID + " has saved master job assignment");
+    	jobAssignments = jobAssign;
     }
 }
