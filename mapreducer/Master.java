@@ -105,7 +105,7 @@ public class Master extends Thread
     		//update our result
     		if ((job.workerNodeID == workerID) && (job.jobID == jobID))
     			job.result = result;
-    		
+		
     		//check to see if all workers are done
     		if (job.jobID == jobID)
     			if (job.result == -1)
@@ -121,6 +121,13 @@ public class Master extends Thread
     			
     		int jobClientID = this.jobClientMap.get(jobID);
     		mrHandler.WorkComplete(jobClientID, jobID, totalResults);
+    	}
+    	else
+    	{		
+			//propogate this result to all other workers so they can update their
+			//job assignment table
+    		
+    		this.mrHandler.SendOutJobAssignmentList(this.jobAssignments);    		
     	}
 
     }

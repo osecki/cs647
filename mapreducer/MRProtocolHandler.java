@@ -105,8 +105,6 @@ public class MRProtocolHandler
             {
             	//retrieve job data from client
             	worker.retrieveJobData(msg);
-            	
-                //worker.startMRJob(msg);
                 break;
             }
             case PeerNodeMessageType.MR_JOB_COMPLETE:
