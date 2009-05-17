@@ -13,6 +13,10 @@ public class Master extends Thread
     public MRProtocolHandler mrHandler;
     public int nodeID;
     public static int jobID = 0;
+
+	//List of all workers assignments for this job submission
+	public ArrayList<JobSubmission> jobAssignments;
+    
     
     //job table which has key=workerNodeID;  value=whether they have responded with
     //answer to task.
@@ -45,6 +49,9 @@ public class Master extends Thread
     // Method to handle PeerNodeMessageType.SUBMIT_MR_JOB
     public void workerSubmittedJob(String srcFile, String wordToSearch, int jobClientID)
     {
+    	 jobAssignments = new ArrayList<JobSubmission>();
+    	
+    	
     	//job table to keep track of jobID and workerIDs and results
     	jobTable = new Hashtable<Integer, Hashtable<Integer, Integer>>();
     	
@@ -89,6 +96,9 @@ public class Master extends Thread
 		
     	//Tell workers to get the data sets
     	this.mrHandler.AssignWorkersJob(jobID, words, wordToSearch, jobClientID);
+    	
+    	//Send out assignment list to all nodes 
+    	this.mrHandler.SendOutJobAssignmentList(this.jobAssignments);
     }
 
     /*

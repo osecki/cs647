@@ -11,6 +11,7 @@ public class PeerNodeMessageType
     public static final int GET_MR_JOB_DATASET = 103;
     public static final int MR_JOB_REDUCE_RESULT = 104;
     public static final int MR_JOB_DATASET_REPLY = 105;
+    public static final int PROPOGATE_JOB_ASSIGNMENTS = 106;
 
     public static final int MASTER_NODE_FAILED = 200;
     public static final int NEW_MASTER_NODE = 201;
@@ -41,6 +42,10 @@ public class PeerNodeMessageType
     public ArrayList<Integer> workerResults;
     public int result;
     public int mrJobID; // ID of the MR Job
+    
+    //List to propogate to all nodes such that if master goes down,
+    //new node will know who is doing what for the job m/r
+    public ArrayList<JobSubmission> jobAssignment;
 
     // Master Node Election Logic related fields
     // TODO

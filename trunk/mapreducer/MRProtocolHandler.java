@@ -88,6 +88,11 @@ public class MRProtocolHandler
     {
         switch (msg.messageID)
         {
+        	case PeerNodeMessageType.PROPOGATE_JOB_ASSIGNMENTS:
+        	{
+        		//TO DO:  implement me
+        		break;
+        	}
             case PeerNodeMessageType.SUBMIT_MR_JOB:
             {
                 master.workerSubmittedJob(msg.srcFileName, msg.wordToSearch, msg.jobClientID);
@@ -356,6 +361,7 @@ public class MRProtocolHandler
     //Input : words - total words in file
     public void AssignWorkersJob(int jobID, ArrayList<String> words, String wordToSearch, int jobClientID)
     {
+    	
     	int totalWords = words.size();
     	int currentBlockBegin = 1;
     	int currentBlockEnd = 0;
@@ -404,7 +410,18 @@ public class MRProtocolHandler
     		//TO INDICATE NO RESPONSE YET
     		master.jobTable.get(jobID).put(msg.destNode, -1);
     		
+    		//Save job information in a structure such that we can propogate to all 
+    		//workers
+    		JobSubmission jobSub = new JobSubmission();
+    		jobSub.jobID = jobID;
+    		jobSub.jobClientID = jobClientID;
+    		jobSub.dataSetBlockNumBeginIndex = msg.dataSetBlockNumBeginIndex;
+    		jobSub.dataSetBlockNumEndIndex = msg.dataSetBlockNumEndIndex;
     		
+    		//Add assignment to master nodes list
+    		this.master.jobAssignments.add(jobSub);    		
+    		
+    		//Send the message
     		this.commsMgr.SendMsg(msg);
     	}
     }
@@ -449,6 +466,16 @@ public class MRProtocolHandler
     	msg.destNode = jobClientID;
     	msg.mrJobID = jobID;
     	msg.workerResults = totalResults;
+    	this.commsMgr.SendMsg(msg);
+    }
+    
+    //This method allows the master to send out the job assignment list to all nodes
+    //such that if master dies, worker can take over
+    public void SendOutJobAssignmentList(ArrayList<JobSubmission> jobAssignments)
+    {
+    	PeerNodeMessageType msg = new PeerNodeMessageType();
+    	msg.messageID = PeerNodeMessageType.PROPOGATE_JOB_ASSIGNMENTS;
+    	msg.destNode = PeerNodeMessageType.BROADCAST_DEST_ID;
     	this.commsMgr.SendMsg(msg);
     }
 }
