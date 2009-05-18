@@ -15,10 +15,9 @@ public class FaultAndHealth
 	private int[] workerNodeIds;
 	private int[] workerNodeTimeOutValues;
 	
-	private static final int MASTER_FAILURE_DETECT_TIMEOUT = 10;  // 100's millisec
-	private static final int WORKER_FAILURE_DETECT_TIMEOUT = 10;  // 100's millisec
-	
 	private int masterFailureDetectCount;
+	
+	private int heartbeatIntervalCount;
 	
 	
     /**
@@ -36,7 +35,8 @@ public class FaultAndHealth
 	
 	public FaultAndHealth ()
 	{
-		masterFailureDetectCount = MASTER_FAILURE_DETECT_TIMEOUT;
+		masterFailureDetectCount = ConfigSettings.masterNodeFailureTimeout;
+		heartbeatIntervalCount = ConfigSettings.heartbeatInterval;
 	}
 	
 	/**
@@ -51,7 +51,7 @@ public class FaultAndHealth
 		for(int i=0; i<workerNodes.size(); i++)
 		{ 
 			workerNodeIds[i] = workerNodes.get(i);
-			workerNodeTimeOutValues[i] = WORKER_FAILURE_DETECT_TIMEOUT;
+			workerNodeTimeOutValues[i] = ConfigSettings.workerNodeFailureTimeout;
 		}		
 	}
 	
@@ -60,25 +60,40 @@ public class FaultAndHealth
 	 */
 	public void SendPing()
 	{
-		for(int i=0; i<workerNodeIds.length; i++)
+		if(heartbeatIntervalCount == 0)
 		{
-			workerNodeTimeOutValues[i]--;
+		   heartbeatIntervalCount = ConfigSettings.heartbeatInterval;	
+		try
+		{
+		   for(int i=0; i<workerNodeIds.length; i++)
+		   {
+			   workerNodeTimeOutValues[i]--;
 			
-			if(workerNodeTimeOutValues[i] > 0)
-			{
-				// Send ping
-				pingMsg = new PeerNodeMessageType();
-                pingMsg.messageID = PeerNodeMessageType.HEART_BEAT_PING;
-                pingMsg.sourceNodeType = mrHandler.GetNodeType();
-                pingMsg.destNode = workerNodeIds[i];
+			   if(workerNodeTimeOutValues[i] > 0)
+			   {
+				   // Send ping
+				   pingMsg = new PeerNodeMessageType();
+                   pingMsg.messageID = PeerNodeMessageType.HEART_BEAT_PING;
+                   pingMsg.sourceNodeType = mrHandler.GetNodeType();
+                   pingMsg.destNode = workerNodeIds[i];
 
-                commsMgr.SendMsg(pingMsg);
-			}
-			else
-			{
-				// TODO: Worker node failed, notify master 
-				System.out.println("Worker node has failed. ID="+workerNodeIds[i]);
-			}
+                   commsMgr.SendMsg(pingMsg);
+			   }
+			   else
+			   {
+				   // TODO: Worker node failed, notify master 
+				   System.out.println("Worker node has failed. ID="+workerNodeIds[i]);
+			   }
+		   }
+		}
+        catch (Exception ex)
+        {
+            System.out.println(mrHandler.GetNodeName() + " Exception in FaultAndHealth::SendPing " + ex.getMessage());
+        }
+		}
+		else
+		{
+			heartbeatIntervalCount--;
 		}
 	}
 
@@ -87,7 +102,7 @@ public class FaultAndHealth
 	public void processHeartBeatPing(int masterNodeId)
 	{
 		// Each time we are pinged by master, reset the count
-		masterFailureDetectCount = MASTER_FAILURE_DETECT_TIMEOUT;		
+		masterFailureDetectCount = ConfigSettings.masterNodeFailureTimeout;		
 		
 		pingMsg = new PeerNodeMessageType();
 		pingMsg.messageID = PeerNodeMessageType.HEART_BEAT_REPLY;
@@ -108,7 +123,7 @@ public class FaultAndHealth
 		{
 			if(workerNodeIds[i] == workerID)
 			{
-			   workerNodeTimeOutValues[i] = WORKER_FAILURE_DETECT_TIMEOUT;
+			   workerNodeTimeOutValues[i] = ConfigSettings.workerNodeFailureTimeout;
 			   break;
 			}
 		}
@@ -117,16 +132,25 @@ public class FaultAndHealth
 	// IF WORKER node
     public void checkMasterHeartBeatPing()
     {
-    	// On each interval, decrement the masterFailureDetectCount
-    	masterFailureDetectCount--;
+    	if(heartbeatIntervalCount == 0)
+    	{
+    		heartbeatIntervalCount = ConfigSettings.heartbeatInterval;
+    		
+    	    // On each interval, decrement the masterFailureDetectCount
+    	    masterFailureDetectCount--;
     	
-       // If we hit a count of zero, then we determine that master has failed
-       // since we have not received any pings
-       if(masterFailureDetectCount <= 0)
-       {
-    	   // TODO: Call MRHandler to initiate Master Election logic
-    	   //System.out.println("Master node has failed.");
-       }
+            // If we hit a count of zero, then we determine that master has failed
+            // since we have not received any pings
+           if(masterFailureDetectCount <= 0)
+           {
+    	       // TODO: Call MRHandler to initiate Master Election logic
+               // System.out.println("Master node has failed.");
+           }
+    	}
+    	else
+    	{
+    		heartbeatIntervalCount--;
+    	}
     }
     
  
