@@ -86,7 +86,7 @@ public class P2PCommsManager extends Thread
                 	// if master is still alive(worker node)
                 	mrHandler.PerformHouseKeeping();
 
-                    Thread.sleep(250);
+                    Thread.sleep(ConfigSettings.msgPollInterval);
                 }
                 catch (Exception ex)
                 {
