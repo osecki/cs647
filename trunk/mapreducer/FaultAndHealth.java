@@ -143,8 +143,17 @@ public class FaultAndHealth
             // since we have not received any pings
            if(masterFailureDetectCount <= 0)
            {
-    	       // TODO: Call MRHandler to initiate Master Election logic
+    	       // Send MASTER FAILED message to all other worker nodes
                // System.out.println("Master node has failed.");
+        	   for(int i=0; i<workerNodeIds.length; i++)
+    		   {    			   
+    			  pingMsg = new PeerNodeMessageType();
+                  pingMsg.messageID = PeerNodeMessageType.MASTER_NODE_FAILED;
+                  pingMsg.sourceNodeType = mrHandler.GetNodeType();
+                  pingMsg.destNode = workerNodeIds[i];
+
+                  commsMgr.SendMsg(pingMsg);    			   
+    		   }
            }
     	}
     	else
