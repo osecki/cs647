@@ -15,6 +15,10 @@ public class ConfigSettings
     public static String eventLogPath;
     public static String eventLogLevel;
     public static String scenarioToRun;
+    public static int msgPollInterval;
+    public static int heartbeatInterval;
+    public static int masterNodeFailureTimeout;
+    public static int workerNodeFailureTimeout;
 
     public static void Init()
     {
@@ -41,6 +45,15 @@ public class ConfigSettings
                 eventLogLevel = pro.getProperty("eventLoggerLevel");
 
                 scenarioToRun = pro.getProperty("scenarioToRun");
+                
+                msgPollInterval = Integer.parseInt(pro.getProperty("msgPollInterval"));
+                
+                heartbeatInterval = Integer.parseInt(pro.getProperty("heartbeatInterval"));
+                
+                masterNodeFailureTimeout = Integer.parseInt(pro.getProperty("masterNodeFailureTimeOut"));
+                
+                workerNodeFailureTimeout = Integer.parseInt(pro.getProperty("workerNodeFailureTimeOut"));
+                
             }
         }
         catch (IOException e)
