@@ -60,19 +60,6 @@ public class Simulator implements Runnable
         // Find the master node.
         masterNode.sim_InitialMasterNodeIDBroadcast();
         
-        //Enumeration<PeerNodeType> e = peerNodes.elements();
-        //PeerNodeType masterNode;
-        //while (e.hasMoreElements())
-        //{
-           // masterNode = e.nextElement();
-
-            //if (masterNode.getRoleType() == PeerNodeRoleType.MASTER)
-            //{
-            //	masterNode.sim_InitialMasterNodeIDBroadcast();
-             //   break;
-            //}
-        //}
-        
         // Need to propagate the worker node list
         Enumeration<PeerNodeType> we = peerNodes.elements();
         PeerNodeType workerNode;
@@ -86,8 +73,6 @@ public class Simulator implements Runnable
             }
         }        
         masterNode.sim_InitialBroadcastWorkerNodeList();
-        
-        
 
         // Run nodes
         // This will start the communications thread and the map/reduce thread
@@ -99,6 +84,9 @@ public class Simulator implements Runnable
 
     }
 
+    /**
+     * 
+     */
     private void selectRandomJobClient()
     {
         int jobClientIndex = (int) (0 + Math.random() * ConfigSettings.numNodes);
@@ -107,6 +95,9 @@ public class Simulator implements Runnable
         peerNodes.get(jobClientKey).setNodeName();
     }
 
+    /**
+     * 
+     */
     private void selectRandomMaster()
     {
         boolean foundMaster = false;
@@ -128,6 +119,9 @@ public class Simulator implements Runnable
         }
     }
 
+    /**
+     * 
+     */
     private void runNodeThreads()
     {
         // Run all node threads
