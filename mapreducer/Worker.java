@@ -80,7 +80,7 @@ public class Worker extends Thread
     }
 
     // Method to handle PeerNodeMessageType.MR_JOB_DATASET_REPLY
-    public void processDataset(byte[] dataSet)
+    public void processDataset(byte[] dataSet) throws InterruptedException
     {
         // TODO The dataset for this worker has arrived, start the m/r job. Put
         // on queue for thread to process????
@@ -100,6 +100,10 @@ public class Worker extends Thread
     			count = count + 1;
     		}
     	}
+    	
+		
+		//introduce some delay in the processing
+		Thread.sleep(10000);
 
     	EventLogging.info("Worker " + this.nodeID + " has completed processing: " + count);
     	
