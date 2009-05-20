@@ -83,6 +83,8 @@ public class FaultAndHealth
 			   {
 				   // TODO: Worker node failed, notify master 
 				   System.out.println("Worker node has failed. ID="+workerNodeIds[i]);
+				   
+				   mrHandler.DetectWorkerNodeFailure(workerNodeIds[i]);
 			   }
 		   }
 		}
