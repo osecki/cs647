@@ -17,6 +17,7 @@ public class Worker extends Thread
     public int jobID;
     
     public byte[] dataSet;
+    public int startIndex;
     public boolean jobDataAvailable;
     
     //Data structure of masters work breakdown

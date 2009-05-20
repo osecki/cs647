@@ -131,4 +131,19 @@ public class Master extends Thread
     	}
 
     }
+    
+    public void WorkerFailureDetected(int workerNodeID)
+    {
+    	//implement me
+    	
+    	for (int i = 0; i < jobAssignments.size(); i++)
+    	{
+    		JobSubmission job = jobAssignments.get(i);
+    		
+
+    	}    	
+    	
+   	
+
+    }
 }

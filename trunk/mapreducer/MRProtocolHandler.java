@@ -274,7 +274,9 @@ public class MRProtocolHandler
     public void DetectWorkerNodeFailure(int nodeID)
     {
         workerNodeIDs.remove(nodeID);
+ 
         // TODO: Call into master
+        master.WorkerFailureDetected(nodeID);
     }
 
     /*
@@ -304,24 +306,6 @@ public class MRProtocolHandler
         msg.srcFileName = filename;
         msg.wordToSearch = wordToSearch;
         msg.sourceNodeType = nodeType;
-
-        commsMgr.SendMsg(msg);
-    }
-
-    /*
-     * Used if Worker node. Worker call this when their piece of the MR job is
-     * completed.
-     */
-    public void WorkerMRJobComplete(int mrJobID, int blockNum)
-    {
-        PeerNodeMessageType msg;
-
-        msg = new PeerNodeMessageType();
-
-        msg.messageID = PeerNodeMessageType.MR_JOB_COMPLETE;
-        msg.destNode = masterNodeID;
-        msg.mrJobID = mrJobID;
-        //msg.dataSetBlockNum = blockNum;
 
         commsMgr.SendMsg(msg);
     }
