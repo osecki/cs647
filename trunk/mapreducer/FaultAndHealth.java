@@ -82,8 +82,7 @@ public class FaultAndHealth
 			   else
 			   {
 				   // TODO: Worker node failed, notify master 
-				   System.out.println("Worker node has failed. ID="+workerNodeIds[i]);
-				   
+				   EventLogging.info("Worker node has failed. ID="+workerNodeIds[i]);
 				   mrHandler.DetectWorkerNodeFailure(workerNodeIds[i]);
 			   }
 		   }

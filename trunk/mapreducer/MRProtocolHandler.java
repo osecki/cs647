@@ -241,9 +241,10 @@ public class MRProtocolHandler
         return masterNodeID;
     }
 
-    public void GetWorkerNodes()
+    public ArrayList<Integer> GetWorkerNodes()
     {
         // TODO
+    	return workerNodeIDs;
     }
     
     public int getWorkerCount()
@@ -466,5 +467,24 @@ public class MRProtocolHandler
     	msg.destNode = PeerNodeMessageType.BROADCAST_DEST_ID;
     	msg.jobAssignment = jobAssignments;
     	this.commsMgr.SendMsg(msg);
+    }
+    
+    public void AssignNewWorkerJob(int jobID, int newWorkerNodeID, int jobClientID, int dataChunkID, int dataBlockBegin, int dataBlockEnd)
+    {
+	   	PeerNodeMessageType msg = new PeerNodeMessageType();
+	   	msg.mrJobID = jobID;
+    	msg.destNode = newWorkerNodeID;
+    	msg.messageID = PeerNodeMessageType.WORKER_START_MR_JOB;
+    	msg.jobClientID = jobClientID;
+    	msg.mrJobID = jobID;
+    	msg.dataChunkID = dataChunkID;
+    	msg.wordToSearch = ConfigSettings.wordToSearch;
+    	msg.dataSetBlockNumBeginIndex = dataBlockBegin;	
+    	msg.dataSetBlockNumEndIndex = dataBlockEnd;
+    	msg.dataSetSize = (dataBlockEnd - dataBlockBegin);
+    	
+		EventLogging.info("WORKER " + msg.destNode + " Assigned Chunk (" + msg.dataChunkID + "): " + msg.dataSetBlockNumBeginIndex + " - " + msg.dataSetBlockNumEndIndex);
+    	
+		this.commsMgr.SendMsg(msg);
     }
 }

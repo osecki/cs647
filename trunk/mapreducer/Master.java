@@ -136,10 +136,29 @@ public class Master extends Thread
     {
     	//implement me
     	
+    	//find the job assignment for this worker
     	for (int i = 0; i < jobAssignments.size(); i++)
     	{
     		JobSubmission job = jobAssignments.get(i);
     		
+    		if (job.workerNodeID == workerNodeID)
+    		{
+    			//Grab a random worker for now
+    			//Probably will need to in the future distinguish between
+    			//free workers and working workers
+    			
+    			ArrayList<Integer> workerNodes = mrHandler.GetWorkerNodes();
+    			
+    			//grab a workerNode and correct the jobAssignments data structure
+    			int newWorkerNodeID = workerNodes.get(0);		//FIX ME
+    			
+    			//send out the new jobAssignments data structure to all nodes
+    			//send out a message to the new worker to tell him to grab the dataset
+    			
+    			mrHandler.AssignNewWorkerJob(job.jobID, newWorkerNodeID, job.jobClientID, job.dataChunkID, job.dataSetBlockNumBeginIndex, job.dataSetBlockNumEndIndex);
+    			
+    			break;
+    		}
 
     	}    	
     	
