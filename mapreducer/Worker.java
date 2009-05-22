@@ -26,6 +26,8 @@ public class Worker extends Thread
     //Queue to manage tasks that worker needs to do
     private LinkedList<JobSubmission> myJobList;
     
+    private int currentDataChunkID = -1;
+    
     public Worker()
     {
     	myJobList = new LinkedList<JobSubmission>();
@@ -69,6 +71,9 @@ public class Worker extends Thread
     
     public void retrieveJobData(PeerNodeMessageType msg)
     {     	
+    	//save data chunk ID for now
+    	this.currentDataChunkID = msg.dataChunkID;
+    	
     	//save jobID for now
     	this.jobID = msg.mrJobID;
     	
@@ -109,7 +114,7 @@ public class Worker extends Thread
     	
     	//done the calculation, send reply
     	this.jobDataAvailable = false;
-    	mrHandler.WorkerJobComplete(jobID, count, this.mrHandler.GetMasterNode());
+    	mrHandler.WorkerJobComplete(jobID, count, this.mrHandler.GetMasterNode(), this.currentDataChunkID);
     	
     	
     	//TO DO:

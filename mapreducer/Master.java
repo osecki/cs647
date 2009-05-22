@@ -91,19 +91,19 @@ public class Master extends Thread
      * workers have sent the JOB COMPLETE for a particular job, then notify the
      * Job Client
      */
-    public void jobComplete(int jobID, int workerID, int result)
+    public void jobComplete(int jobID, int workerID, int result, int dataChunkID)
     {
     	boolean done = true;
     	ArrayList<Integer> totalResults = new ArrayList<Integer>();
     	
-    	EventLogging.info("Master has received worker " + workerID + " results");
+    	EventLogging.info("Master has received worker " + workerID + " results for chunk " + dataChunkID);
 
     	for (int i = 0; i < jobAssignments.size(); i++)
     	{
     		JobSubmission job = jobAssignments.get(i);
     		    		
     		//update our result
-    		if ((job.workerNodeID == workerID) && (job.jobID == jobID))
+    		if ((job.workerNodeID == workerID) && (job.jobID == jobID) && (job.dataChunkID == dataChunkID))
     			job.result = result;
 		
     		//check to see if all workers are done
