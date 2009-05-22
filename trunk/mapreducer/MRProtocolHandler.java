@@ -109,7 +109,7 @@ public class MRProtocolHandler
             }
             case PeerNodeMessageType.MR_JOB_COMPLETE:
             {
-                master.jobComplete(msg.mrJobID, msg.sourceNode, msg.result);
+                master.jobComplete(msg.mrJobID, msg.sourceNode, msg.result, msg.dataChunkID);
                 break;
             }
             case PeerNodeMessageType.MR_JOB_REDUCE_RESULT:
@@ -371,6 +371,9 @@ public class MRProtocolHandler
         	//save job ID
         	msg.mrJobID = jobID;
         	
+        	//save work chunk ID
+        	msg.dataChunkID = (i + 1);
+        	
         	//Inform them of what to search for
         	msg.wordToSearch = wordToSearch;
         	
@@ -389,13 +392,14 @@ public class MRProtocolHandler
         		msg.dataSetSize = (msg.dataSetBlockNumEndIndex - msg.dataSetBlockNumBeginIndex);
         	}
         	
-    		EventLogging.info("WORKER " + msg.destNode + " Assigned: " + msg.dataSetBlockNumBeginIndex + " - " + msg.dataSetBlockNumEndIndex);
+    		EventLogging.info("WORKER " + msg.destNode + " Assigned Chunk (" + msg.dataChunkID + "): " + msg.dataSetBlockNumBeginIndex + " - " + msg.dataSetBlockNumEndIndex);
  		
     		//Save job information in a structure such that we can propogate to all 
     		//workers
     		JobSubmission jobSub = new JobSubmission();
     		jobSub.jobID = jobID;
     		jobSub.jobClientID = jobClientID;
+    		jobSub.dataChunkID = msg.dataChunkID;
     		jobSub.dataSetBlockNumBeginIndex = msg.dataSetBlockNumBeginIndex;
     		jobSub.dataSetBlockNumEndIndex = msg.dataSetBlockNumEndIndex;
     		jobSub.workerNodeID = msg.destNode;
@@ -431,13 +435,14 @@ public class MRProtocolHandler
     }
     
     //This method allows the worker to tell the master he is done
-    public void WorkerJobComplete(int jobID, int results, int masterID)
+    public void WorkerJobComplete(int jobID, int results, int masterID, int dataChunkID)
     {
     	PeerNodeMessageType msg = new PeerNodeMessageType();
     	msg.messageID = PeerNodeMessageType.MR_JOB_COMPLETE;
     	msg.destNode = masterID;
     	msg.mrJobID = jobID;
     	msg.result = results;
+    	msg.dataChunkID = dataChunkID;
     	this.commsMgr.SendMsg(msg);
     }
     
