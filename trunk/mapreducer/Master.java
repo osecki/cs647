@@ -153,8 +153,10 @@ public class Master extends Thread
     			int newWorkerNodeID = workerNodes.get(0);		//FIX ME
     			
     			//send out the new jobAssignments data structure to all nodes
-    			//send out a message to the new worker to tell him to grab the dataset
+    			jobAssignments.get(i).workerNodeID = newWorkerNodeID;
+    			mrHandler.SendOutJobAssignmentList(jobAssignments);
     			
+    			//send out a message to the new worker to tell him to grab the dataset
     			mrHandler.AssignNewWorkerJob(job.jobID, newWorkerNodeID, job.jobClientID, job.dataChunkID, job.dataSetBlockNumBeginIndex, job.dataSetBlockNumEndIndex);
     			
     			break;
