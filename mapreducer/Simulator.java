@@ -27,10 +27,12 @@ public class Simulator implements Runnable
         // Now run the scenarios ??
         
         
-        //BS TEST BEGIN
+        //BS TEST BEGIN  - Uncomment to fail a worker node and redistribute his work to another worker
+/*        
         int workerNodeID = getWorkerToFail();
         PeerNodeType node = peerNodes.get(workerNodeID);
-        //node.mrHandler.commsMgr.sim_FailThisNode();
+        node.mrHandler.commsMgr.sim_FailThisNode();
+*/
         //BS TEST END
 
     }
