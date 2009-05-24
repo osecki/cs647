@@ -123,7 +123,7 @@ public class MRProtocolHandler
                 break;
             }
             case PeerNodeMessageType.MR_JOB_DATASET_REPLY:
-            {
+            {            	
             	worker.dataSet = msg.dataChunk;
             	worker.jobDataAvailable = true;
                 // worker.processDataset(msg.dataChunk);
@@ -273,11 +273,23 @@ public class MRProtocolHandler
      * respond to Ping
      */
     public void DetectWorkerNodeFailure(int nodeID)
-    {
-        workerNodeIDs.remove(nodeID);
- 
-        // TODO: Call into master
-        master.WorkerFailureDetected(nodeID);
+    {    	 
+    	boolean removedNode = false;
+    	
+       	//find the index in the list for this nodeID so we can remove it
+       	for (int i = 0 ; i < workerNodeIDs.size(); i++)
+       	{
+       		if (workerNodeIDs.get(i) == nodeID)
+       		{
+       			workerNodeIDs.remove(i);
+       			removedNode = true;
+       			break;
+       		}
+       	}
+        
+       	if (removedNode)
+   	        master.WorkerFailureDetected(nodeID);
+       	
     }
 
     /*
@@ -483,7 +495,7 @@ public class MRProtocolHandler
     	msg.dataSetBlockNumEndIndex = dataBlockEnd;
     	msg.dataSetSize = (dataBlockEnd - dataBlockBegin);
     	
-		EventLogging.info("WORKER " + msg.destNode + " Assigned Chunk (" + msg.dataChunkID + "): " + msg.dataSetBlockNumBeginIndex + " - " + msg.dataSetBlockNumEndIndex);
+		EventLogging.info("Worker " + msg.destNode + " Assigned Chunk (" + msg.dataChunkID + "): " + msg.dataSetBlockNumBeginIndex + " - " + msg.dataSetBlockNumEndIndex);
     	
 		this.commsMgr.SendMsg(msg);
     }
