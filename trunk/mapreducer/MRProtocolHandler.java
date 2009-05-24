@@ -119,14 +119,12 @@ public class MRProtocolHandler
             }
             case PeerNodeMessageType.GET_MR_JOB_DATASET:
             {
-                jobClient.getDataset(msg.dataSetBlockNumBeginIndex, msg.dataSetBlockNumEndIndex, msg.sourceNode);
+                jobClient.getDataset(msg.dataSetBlockNumBeginIndex, msg.dataSetBlockNumEndIndex, msg.sourceNode, msg.dataChunkID);
                 break;
             }
             case PeerNodeMessageType.MR_JOB_DATASET_REPLY:
             {            	
-            	worker.dataSet = msg.dataChunk;
-            	worker.jobDataAvailable = true;
-                // worker.processDataset(msg.dataChunk);
+            	worker.SetChunkDataset(msg.dataChunk, msg.dataChunkID);
                 break;
             }
             case PeerNodeMessageType.HEART_BEAT_PING:
@@ -427,23 +425,25 @@ public class MRProtocolHandler
     }
     
     //This method allows the worker to get the dataset from the jobclient
-    public void WorkerGetDataset(int begin, int end, int jobClientID)
+    public void WorkerGetDataset(int begin, int end, int jobClientID, int chunkID)
     {
     	PeerNodeMessageType msg = new PeerNodeMessageType();
     	msg.messageID = PeerNodeMessageType.GET_MR_JOB_DATASET;
     	msg.dataSetBlockNumBeginIndex = begin;
     	msg.dataSetBlockNumEndIndex = end;
     	msg.destNode = jobClientID;
+    	msg.dataChunkID = chunkID;
     	this.commsMgr.SendMsg(msg);
     }
     
     //This method allows the job client to send the dataset back to the worker
-    public void JobClientSendData(String returnData, int workerDest)
+    public void JobClientSendData(String returnData, int workerDest, int dataChunkID)
     {   	
     	PeerNodeMessageType msg = new PeerNodeMessageType();
     	msg.messageID = PeerNodeMessageType.MR_JOB_DATASET_REPLY;
     	msg.destNode = workerDest;
     	msg.dataChunk = returnData.getBytes();
+    	msg.dataChunkID = dataChunkID;
     	this.commsMgr.SendMsg(msg);
     }
     

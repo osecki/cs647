@@ -14,11 +14,8 @@ public class Worker extends Thread
     public MRProtocolHandler mrHandler;
     public int nodeID;
     public String wordToSearch;
-    public int jobID;
     
-    public byte[] dataSet;
     public int startIndex;
-    public boolean jobDataAvailable;
     
     //Data structure of masters work breakdown
     private ArrayList<JobSubmission> jobAssignments;
@@ -26,7 +23,6 @@ public class Worker extends Thread
     //Queue to manage tasks that worker needs to do
     private LinkedList<JobSubmission> myJobList;
     
-    private int currentDataChunkID = -1;
     
     public Worker()
     {
@@ -45,8 +41,6 @@ public class Worker extends Thread
         EventLogging.info("Starting Worker Thread => " + threadName);
         this.setName(threadName);
         
-        this.jobDataAvailable = false;
-        
         // Loop on a m/r queue, when stuff is in the queue, do m/r
         while (true)
         {
@@ -55,9 +49,9 @@ public class Worker extends Thread
         	
         	try 
         	{
-        		if(this.jobDataAvailable == true)
+        		if (readyToWork())
         		{
-			       processDataset(dataSet);
+			       processDataset(myJobList.removeFirst());
         		}
 			    
         		Thread.sleep(1000);
@@ -71,41 +65,34 @@ public class Worker extends Thread
     
     public void retrieveJobData(PeerNodeMessageType msg)
     {     	
-    	//save data chunk ID for now
-    	this.currentDataChunkID = msg.dataChunkID;
-    	
-    	//save jobID for now
-    	this.jobID = msg.mrJobID;
+    	//save an entry in myJobList
+    	JobSubmission jobSub = new JobSubmission();
+    	jobSub.dataChunkID = msg.dataChunkID;
+    	jobSub.dataSetBlockNumBeginIndex = msg.dataSetBlockNumBeginIndex;
+    	jobSub.dataSetBlockNumEndIndex = msg.dataSetBlockNumEndIndex;
+    	jobSub.jobClientID = msg.jobClientID;
+    	jobSub.jobID = msg.mrJobID;
+    	myJobList.add(jobSub);
     	
     	//save the word to search
     	wordToSearch = msg.wordToSearch;
     	
     	// Sends the GET_MR_JOB_DATASET message to the job client
-    	this.mrHandler.WorkerGetDataset(msg.dataSetBlockNumBeginIndex, msg.dataSetBlockNumEndIndex, msg.jobClientID);
+    	this.mrHandler.WorkerGetDataset(msg.dataSetBlockNumBeginIndex, msg.dataSetBlockNumEndIndex, msg.jobClientID, msg.dataChunkID);
     }
 
     // Method to handle PeerNodeMessageType.MR_JOB_DATASET_REPLY
-    public void processDataset(byte[] dataSet) throws InterruptedException
-    {
-        // TODO The dataset for this worker has arrived, start the m/r job. Put
-        // on queue for thread to process????
-    	
+    public void processDataset(JobSubmission job) throws InterruptedException
+    { 	
     	EventLogging.info("Worker " + this.nodeID + " is beginning processing");
    
-    	//for now just process and get a result
-    	
     	int count = 0;
-    	String data = new String(dataSet);
+    	String data = new String(job.dataset);
     	String words[] = data.split(" ");
     	
     	for (int i = 0; i < words.length; i++)
-    	{
     		if (words[i].equals(wordToSearch))
-    		{
-    			count = count + 1;
-    		}
-    	}
-    	
+    			count = count + 1;    	
 		
 		//introduce some delay in the processing
 		Thread.sleep(10000);
@@ -113,21 +100,21 @@ public class Worker extends Thread
     	EventLogging.info("Worker " + this.nodeID + " has completed processing: " + count);
     	
     	//done the calculation, send reply
-    	this.jobDataAvailable = false;
-    	mrHandler.WorkerJobComplete(jobID, count, this.mrHandler.GetMasterNode(), this.currentDataChunkID);
+    	mrHandler.WorkerJobComplete(job.jobID, count, this.mrHandler.GetMasterNode(), job.dataChunkID);
     	
     	
     	//TO DO:
     	//since we are done the job, if we have more jobs on the queue,
     	//get the next one and process
-    	
+/*    	
     	if (myJobList.size() > 0)
     	{
     		System.out.println("******************************* GOT HERE!!!!!!!");
     		
     		JobSubmission newJob = myJobList.removeFirst();		//get the new job 
-        	this.mrHandler.WorkerGetDataset(newJob.dataSetBlockNumBeginIndex, newJob.dataSetBlockNumEndIndex, newJob.jobClientID);    	
+        	this.mrHandler.WorkerGetDataset(newJob.dataSetBlockNumBeginIndex, newJob.dataSetBlockNumEndIndex, newJob.jobClientID, newJob.dataChunkID);    	
     	}
+*/    	
     }
     
     //This method is used when the master propogates job assignments to all other workers
@@ -138,11 +125,40 @@ public class Worker extends Thread
     	jobAssignments = jobAssign;
     }
  
+
     //This method is used when some other worker fails and the master has detected it
     //When the master assigns the lost chunk to me - an existing worker
     //I will queue it and process
     public void QueueNewJobAssignment(JobSubmission job)
     {
     	myJobList.add(job);
+    }
+    
+    public void SetChunkDataset(byte[] dataSet, int dataChunkID)
+    {
+    	for (int i = 0; i < myJobList.size(); i++)
+    	{
+    		if (myJobList.get(i).dataChunkID == dataChunkID)
+    		{
+    			myJobList.get(i).dataset = dataSet;
+    			break;
+    		}
+    	}
+    }
+    
+    private boolean readyToWork()
+    {
+    	boolean ret = false;
+
+    	for (int i = 0; i < myJobList.size(); i++)
+    	{
+    		if (myJobList.get(i).dataset != null)
+    		{
+    			ret = true;
+    			break;
+    		}
+    	}
+    	
+    	return ret;
     }
 }

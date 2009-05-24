@@ -8,5 +8,6 @@ public class JobSubmission
 	public int dataChunkID;
 	public int dataSetBlockNumBeginIndex;	
 	public int dataSetBlockNumEndIndex;
+	public byte[] dataset;
 	public int result;
 }

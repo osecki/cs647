@@ -130,7 +130,7 @@ public class JobClient extends Thread
      * This method retrieves the particular block of data that the requesting
      * Worker node will perform the map/reduce
      */
-    public void getDataset(int beginIndex, int endIndex, int workerNodeDest)
+    public void getDataset(int beginIndex, int endIndex, int workerNodeDest, int dataChunkID)
     {
         // TODO Get the dataset and send back to the requesting worker using
         // the MR_JOB_DATASET_RESULT message
@@ -166,7 +166,7 @@ public class JobClient extends Thread
     		returnData = returnData + words.get(j) + " ";
        	
     	//Send it out
-    	this.mrHandler.JobClientSendData(returnData, workerNodeDest);
+    	this.mrHandler.JobClientSendData(returnData, workerNodeDest, dataChunkID);
    	
     }
 
