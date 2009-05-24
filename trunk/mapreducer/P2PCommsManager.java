@@ -40,6 +40,7 @@ public class P2PCommsManager extends Thread
      */
     public void sim_FailThisNode()
     {
+    	EventLogging.info("Simulator is failing Node ID: " + this.nodeID);
         allowNodeToRun = false;
     }
 

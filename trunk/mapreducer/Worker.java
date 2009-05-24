@@ -123,6 +123,8 @@ public class Worker extends Thread
     	
     	if (myJobList.size() > 0)
     	{
+    		System.out.println("******************************* GOT HERE!!!!!!!");
+    		
     		JobSubmission newJob = myJobList.removeFirst();		//get the new job 
         	this.mrHandler.WorkerGetDataset(newJob.dataSetBlockNumBeginIndex, newJob.dataSetBlockNumEndIndex, newJob.jobClientID);    	
     	}

@@ -3,6 +3,7 @@ package mapreducer;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 public class Simulator implements Runnable
 {
@@ -24,7 +25,36 @@ public class Simulator implements Runnable
         initializeMapReduceSimulator();
 
         // Now run the scenarios ??
+        
+        
+        //BS TEST BEGIN
+        int workerNodeID = getWorkerToFail();
+        PeerNodeType node = peerNodes.get(workerNodeID);
+        //node.mrHandler.commsMgr.sim_FailThisNode();
+        //BS TEST END
 
+    }
+    
+    private int getWorkerToFail()
+    {
+    	//Select the first worker that we find for failure
+    	
+    	int ret = 0;
+    	
+    	Iterator<Integer> iter = peerNodes.keySet().iterator();
+    	
+    	while(iter.hasNext())
+    	{
+    		int nodeID = iter.next();
+    		
+    		if (peerNodes.get(nodeID).getRoleType() == PeerNodeRoleType.WORKER)
+    		{
+    			ret = nodeID;
+    			break;
+    		}
+    	}
+    	
+    	return ret;
     }
 
     private void initializeMapReduceSimulator()
@@ -38,7 +68,7 @@ public class Simulator implements Runnable
             int id;
 
             PeerNodeType node = new PeerNodeType();
-            id = node.hashCode();
+            id = node.getNodeID();
             node.setRoleType(PeerNodeRoleType.WORKER);
             node.setNodeName();
             peerNodes.put(id, node);

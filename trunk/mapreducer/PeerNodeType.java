@@ -9,6 +9,7 @@ public class PeerNodeType
     public JobClient jobClient;
     public FaultAndHealth faultHealth;
     private PeerNodeRoleType roleType;
+    private int nodeID;
     
     public static int new_nodeID = 1;
 
@@ -28,6 +29,9 @@ public class PeerNodeType
         master.nodeID = new_nodeID;
         worker.nodeID = new_nodeID;
         jobClient.nodeID = new_nodeID;
+        
+        // set a master node ID for reference from the simulator
+        nodeID = new_nodeID;
         
         // Increment new node ID
         new_nodeID = new_nodeID + 1;
@@ -73,6 +77,11 @@ public class PeerNodeType
     public PeerNodeRoleType getRoleType()
     {
         return roleType;
+    }
+    
+    public int getNodeID()
+    {
+    	return nodeID;
     }
 
     /**

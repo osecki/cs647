@@ -134,7 +134,7 @@ public class Master extends Thread
     
     public void WorkerFailureDetected(int workerNodeID)
     {
-    	//implement me
+    	EventLogging.info("Master node has been notified that worker " + workerNodeID + " has failed");
     	
     	//find the job assignment for this worker
     	for (int i = 0; i < jobAssignments.size(); i++)
@@ -161,10 +161,6 @@ public class Master extends Thread
     			
     			break;
     		}
-
     	}    	
-    	
-   	
-
     }
 }
