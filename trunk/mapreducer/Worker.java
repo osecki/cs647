@@ -84,7 +84,7 @@ public class Worker extends Thread
     // Method to handle PeerNodeMessageType.MR_JOB_DATASET_REPLY
     public void processDataset(JobSubmission job) throws InterruptedException
     { 	
-    	EventLogging.info("Worker " + this.nodeID + " is beginning processing");
+    	EventLogging.info("Worker " + this.nodeID + " is beginning processing chunk " + job.dataChunkID);
    
     	int count = 0;
     	String data = new String(job.dataset);
@@ -101,20 +101,6 @@ public class Worker extends Thread
     	
     	//done the calculation, send reply
     	mrHandler.WorkerJobComplete(job.jobID, count, this.mrHandler.GetMasterNode(), job.dataChunkID);
-    	
-    	
-    	//TO DO:
-    	//since we are done the job, if we have more jobs on the queue,
-    	//get the next one and process
-/*    	
-    	if (myJobList.size() > 0)
-    	{
-    		System.out.println("******************************* GOT HERE!!!!!!!");
-    		
-    		JobSubmission newJob = myJobList.removeFirst();		//get the new job 
-        	this.mrHandler.WorkerGetDataset(newJob.dataSetBlockNumBeginIndex, newJob.dataSetBlockNumEndIndex, newJob.jobClientID, newJob.dataChunkID);    	
-    	}
-*/    	
     }
     
     //This method is used when the master propogates job assignments to all other workers
