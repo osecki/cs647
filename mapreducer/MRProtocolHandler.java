@@ -2,6 +2,8 @@ package mapreducer;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.lang.*;
+
 
 public class MRProtocolHandler
 {
@@ -17,12 +19,19 @@ public class MRProtocolHandler
 
     private int masterNodeID;
     private ArrayList<Integer> workerNodeIDs;
+    private ArrayList<Double> specialNumberArray;
 
     private PeerNodeMessageType replyMsg;
+    
+    private boolean masterNodeElectionInProgress;
+    private double specialNumber;
 
     public MRProtocolHandler()
     {
         workerNodeIDs = new ArrayList<Integer>();
+        specialNumberArray = new ArrayList<Double>();
+        masterNodeElectionInProgress = false;
+        specialNumber = 0;
     }
 
     public void SetSimulatorReference(Simulator reference)
@@ -75,7 +84,11 @@ public class MRProtocolHandler
     	if(this.nodeType == PeerNodeRoleType.WORKER)
     	{
     	   // Run routine to check that master pings are being recieved
-    		faultHealth.checkMasterHeartBeatPing();
+    		// If a master node failuer has been detected, skip
+    		if(masterNodeElectionInProgress == false)
+    		{
+    		   faultHealth.checkMasterHeartBeatPing();
+    		}
     	}
     	if(this.nodeType == PeerNodeRoleType.MASTER)
     	{
@@ -144,10 +157,19 @@ public class MRProtocolHandler
             case PeerNodeMessageType.MASTER_NODE_FAILED:
             {
                 // TODO: Need function in MRProtocolHandler class
+                if (nodeType == PeerNodeRoleType.CLIENT)
+                {
+                	masterNodeID = 0;
+                }
+                
                 if (nodeType == PeerNodeRoleType.WORKER)
                 {
-                    // Worker nodes are the only nodes that care about master
-                    // and will determine new master node.
+                	// If this worker doesn't already know that the
+                	// master has failed
+                	if(masterNodeElectionInProgress == false)
+                	{
+                		MasterNodeFailureNotification();
+                	}
                 }
                 break;
             }
@@ -156,8 +178,7 @@ public class MRProtocolHandler
                 // TODO: Need function in MRProtocolHandler class
                 if (nodeType == PeerNodeRoleType.WORKER)
                 {
-                    // Worker nodes are the only nodes that care about master
-                    // and will determine new master node.
+                	ProcessNewMasterProtocol(msg);
                 }
                 break;
             }
@@ -227,6 +248,12 @@ public class MRProtocolHandler
     public void UpdateMasterNode(int newMaster)
     {
         masterNodeID = newMaster;
+        
+        if(masterNodeElectionInProgress == true)
+        {
+        	faultHealth.resetMasterFailureDetect();
+        	masterNodeElectionInProgress = false;
+        }
     }
 
     public void UpdateWorkerNodes()
@@ -296,12 +323,102 @@ public class MRProtocolHandler
      */
     public void DetectMasterNodeFailure()
     {
-        replyMsg = new PeerNodeMessageType();
+    	if(masterNodeElectionInProgress == false)
+    	{
+           replyMsg = new PeerNodeMessageType();
 
-        replyMsg.destNode = PeerNodeMessageType.BROADCAST_DEST_ID;
-        replyMsg.messageID = PeerNodeMessageType.MASTER_NODE_FAILED;
+           replyMsg.destNode = PeerNodeMessageType.BROADCAST_DEST_ID;
+           replyMsg.messageID = PeerNodeMessageType.MASTER_NODE_FAILED;
 
-        commsMgr.SendMsg(replyMsg);
+           commsMgr.SendMsg(replyMsg);
+        
+           masterNodeElectionInProgress = true;  
+           masterNodeID = 0;
+           SendRandomNumber();
+    	}
+    }
+    
+    /*
+     * 
+     */
+    public void MasterNodeFailureNotification()
+    {
+    	masterNodeElectionInProgress = true;
+    	masterNodeID = 0;
+    	SendRandomNumber();
+    }
+    
+    public void SendRandomNumber()
+    {
+    	specialNumber = Math.random();
+    	
+        EventLogging.debug(this.nodeName + " random number = " + String.valueOf(specialNumber));    	
+    	
+        for(int i=0; i<workerNodeIDs.size(); i++)
+        {    			   
+            replyMsg = new PeerNodeMessageType();
+			replyMsg.messageID = PeerNodeMessageType.INITIATE_NEW_MASTER_PROTOCOL;
+			replyMsg.sourceNodeType = this.nodeType;
+			replyMsg.destNode = workerNodeIDs.get(i);
+			replyMsg.specialNumber = specialNumber;
+
+			// Only send to other worker nodes
+			if(replyMsg.destNode != commsMgr.GetNodeID())
+               commsMgr.SendMsg(replyMsg);    			   
+		}    	
+    }
+    
+    public void ProcessNewMasterProtocol(PeerNodeMessageType msg)
+    {
+    	int matchCount = 0;
+    	
+    	System.out.println(this.nodeName + " received special number " + 
+    			           String.valueOf(msg.specialNumber) + " from " + String.valueOf(msg.sourceNode));
+    	
+    	specialNumberArray.add(msg.specialNumber);
+    	
+    	// If we have received all the other special numbers, now check to see who
+    	// has the smallest value
+    	if(specialNumberArray.size() == (workerNodeIDs.size() - 1))
+    	{
+    		for(int i=0; i<specialNumberArray.size(); i++)
+    		{
+    			double val = specialNumberArray.get(i);
+    			
+    			if(specialNumber < val)
+    			{
+    				matchCount++;
+    			}    			
+    		}
+    		
+    		// if we have matchCount = to the number of other nodes except this
+    		// one, then this node is the new master
+    		if(matchCount == (workerNodeIDs.size() - 1))
+    		{
+    			System.out.println(nodeName + " Is the new master");
+    			
+    			// Send updated worker node list. We need to remove this node from
+    			// the worker node list and then send out the updated list
+    			for(int j=0; j < workerNodeIDs.size(); j++)
+    			{
+    				int id = workerNodeIDs.get(j);
+    				
+    				if(id == commsMgr.GetNodeID())
+    				{
+    					workerNodeIDs.remove(j);
+    				}
+    			}
+    			BroadcastWorkerNodeList();
+    			
+    			// Send all node new master id
+    			BroadcastNewMasterNode();
+    			
+    			// change node type and node name
+    			SetNodeType(PeerNodeRoleType.MASTER);
+    			SetNodeName();
+    			
+    		}
+    	}
     }
 
     /* Used if JobClient node. */
