@@ -49,7 +49,7 @@ public class PeerNodeMessageType
     public ArrayList<JobSubmission> jobAssignment;
 
     // Master Node Election Logic related fields
-    // TODO
+    public double specialNumber;
     
     // General P2P Network information related fields
     public int masterNodeID;
