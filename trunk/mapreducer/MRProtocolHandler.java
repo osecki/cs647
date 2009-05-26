@@ -226,6 +226,7 @@ public class MRProtocolHandler
             	if((nodeType == PeerNodeRoleType.MASTER) || 
             	  (nodeType == PeerNodeRoleType.WORKER))
             	{
+            		EventLogging.info(nodeName + " updating worker node list");
             		this.workerNodeIDs.clear();
             		
             		
@@ -352,7 +353,7 @@ public class MRProtocolHandler
     {
     	specialNumber = Math.random();
     	
-        EventLogging.debug(this.nodeName + " random number = " + String.valueOf(specialNumber));    	
+        EventLogging.info(this.nodeName + " random number = " + String.valueOf(specialNumber));    	
     	
         for(int i=0; i<workerNodeIDs.size(); i++)
         {    			   
@@ -372,7 +373,7 @@ public class MRProtocolHandler
     {
     	int matchCount = 0;
     	
-    	System.out.println(this.nodeName + " received special number " + 
+    	EventLogging.info(this.nodeName + " received special number " + 
     			           String.valueOf(msg.specialNumber) + " from " + String.valueOf(msg.sourceNode));
     	
     	specialNumberArray.add(msg.specialNumber);
@@ -395,7 +396,7 @@ public class MRProtocolHandler
     		// one, then this node is the new master
     		if(matchCount == (workerNodeIDs.size() - 1))
     		{
-    			System.out.println(nodeName + " Is the new master");
+    			EventLogging.info(nodeName + " Is the new master");
     			
     			// Send updated worker node list. We need to remove this node from
     			// the worker node list and then send out the updated list
@@ -416,6 +417,9 @@ public class MRProtocolHandler
     			// change node type and node name
     			SetNodeType(PeerNodeRoleType.MASTER);
     			SetNodeName();
+    			
+    			// Reset the thread name
+    			this.commsMgr.setName(this.nodeName);
     			
     		}
     	}
