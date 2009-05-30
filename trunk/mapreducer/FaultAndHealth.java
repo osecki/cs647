@@ -82,7 +82,7 @@ public class FaultAndHealth
 			   else
 			   {
 				   // TODO: Worker node failed, notify master 
-				   EventLogging.info("Worker node has failed. ID="+workerNodeIds[i]);
+				   // EventLogging.info("Worker node has failed. ID="+workerNodeIds[i]);
 				   mrHandler.DetectWorkerNodeFailure(workerNodeIds[i]);
 			   }
 		   }
@@ -152,7 +152,7 @@ public class FaultAndHealth
         	   mrHandler.DetectMasterNodeFailure();
         	   
     	       // Send MASTER FAILED message to all other worker nodes
-               System.out.println(mrHandler.GetNodeName() + " >> Master node has failed.");
+               EventLogging.info(mrHandler.GetNodeName() + " >> Master node has failed.");
 //        	   for(int i=0; i<workerNodeIds.length; i++)
 //    		   {    			   
 //    			  pingMsg = new PeerNodeMessageType();
