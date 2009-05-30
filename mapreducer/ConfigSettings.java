@@ -19,6 +19,10 @@ public class ConfigSettings
     public static int heartbeatInterval;
     public static int masterNodeFailureTimeout;
     public static int workerNodeFailureTimeout;
+    public static boolean failWorkerNode;
+    public static long failWorkerNodeDelay;
+    public static boolean failMasterNode;
+    public static long failMasterNodeDelay;
 
     public static void Init()
     {
@@ -53,6 +57,14 @@ public class ConfigSettings
                 masterNodeFailureTimeout = Integer.parseInt(pro.getProperty("masterNodeFailureTimeOut"));
                 
                 workerNodeFailureTimeout = Integer.parseInt(pro.getProperty("workerNodeFailureTimeOut"));
+                
+                failWorkerNode = Boolean.parseBoolean(pro.getProperty("failworkernode"));
+                
+                failWorkerNodeDelay = Long.parseLong(pro.getProperty("failworkernodedelay"));
+                
+                failMasterNode = Boolean.parseBoolean(pro.getProperty("failmasternode"));
+                
+                failMasterNodeDelay = Long.parseLong(pro.getProperty("failmasternodedelay"));
                 
             }
         }
