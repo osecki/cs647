@@ -52,6 +52,7 @@ public class JobClient extends Thread
             // Need to only submit job if a master exists
             while (!masterExists)
             {
+            	EventLogging.info(mrHandler.GetNodeName() + " Finding Master Node");
                 mrHandler.QueryMasterNode();
 
                 // Sleep 5 seconds to allow for reply

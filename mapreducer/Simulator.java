@@ -28,11 +28,39 @@ public class Simulator implements Runnable
         
         
         //BS TEST BEGIN  - Uncomment to fail a worker node and redistribute his work to another worker
-/*        
-        int workerNodeID = getWorkerToFail();
-        PeerNodeType node = peerNodes.get(workerNodeID);
-        node.mrHandler.commsMgr.sim_FailThisNode();
-*/
+        
+        if(ConfigSettings.failWorkerNode == true)
+        {
+           try 
+           {
+			   Thread.sleep(ConfigSettings.failWorkerNodeDelay);
+			   int workerNodeID = getWorkerToFail();
+	           PeerNodeType node = peerNodes.get(workerNodeID);
+	           node.mrHandler.commsMgr.sim_FailThisNode();
+		   } 
+           catch (InterruptedException e) 
+           {
+			   // TODO Auto-generated catch block
+			   e.printStackTrace();
+	  	   }
+        }
+        
+        if(ConfigSettings.failMasterNode == true)
+        {
+           try 
+           {
+			   Thread.sleep(ConfigSettings.failMasterNodeDelay);
+			   int masterNodeID = getMasterToFail();
+	           PeerNodeType node = peerNodes.get(masterNodeID);
+	           node.mrHandler.commsMgr.sim_FailThisNode();
+		   } 
+           catch (InterruptedException e) 
+           {
+			   // TODO Auto-generated catch block
+			   e.printStackTrace();
+	  	   }
+        }        
+        
         //BS TEST END
 
     }
@@ -59,6 +87,25 @@ public class Simulator implements Runnable
     	return ret;
     }
 
+    private int getMasterToFail()
+    {
+    	int ret = 0;
+    	
+    	Iterator<Integer> iter = peerNodes.keySet().iterator();
+    	
+    	while(iter.hasNext())
+    	{
+    		int nodeID = iter.next();
+    		
+    		if (peerNodes.get(nodeID).getRoleType() == PeerNodeRoleType.MASTER)
+    		{
+    			ret = nodeID;
+    			break;
+    		}
+    	}
+    	
+    	return ret;
+    }    
     private void initializeMapReduceSimulator()
     {
         peerNodes = new Hashtable<Integer, PeerNodeType>();
