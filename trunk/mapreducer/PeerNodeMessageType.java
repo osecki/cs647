@@ -1,6 +1,7 @@
 package mapreducer;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 public class PeerNodeMessageType
 {
@@ -47,6 +48,8 @@ public class PeerNodeMessageType
     //List to propogate to all nodes such that if master goes down,
     //new node will know who is doing what for the job m/r
     public ArrayList<JobSubmission> jobAssignment;
+    public int latestJobID;
+    public Hashtable<Integer, Integer> jobClientMap;
 
     // Master Node Election Logic related fields
     public double specialNumber;

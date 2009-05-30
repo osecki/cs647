@@ -105,7 +105,7 @@ public class MRProtocolHandler
         	{
         		if (nodeType == PeerNodeRoleType.WORKER)
         		{
-        			worker.saveJobAssignments(msg.jobAssignment);
+        			master.saveJobAssignments(msg);
         		}
         		break;
         	}
@@ -421,6 +421,8 @@ public class MRProtocolHandler
     			// Reset the thread name
     			this.commsMgr.setName(this.nodeName);
     			
+    			this.masterNodeID = commsMgr.GetNodeID();
+    			
     		}
     	}
     }
@@ -571,13 +573,37 @@ public class MRProtocolHandler
     //This method allows the worker to tell the master he is done
     public void WorkerJobComplete(int jobID, int results, int masterID, int dataChunkID)
     {
-    	PeerNodeMessageType msg = new PeerNodeMessageType();
-    	msg.messageID = PeerNodeMessageType.MR_JOB_COMPLETE;
-    	msg.destNode = masterID;
-    	msg.mrJobID = jobID;
-    	msg.result = results;
-    	msg.dataChunkID = dataChunkID;
-    	this.commsMgr.SendMsg(msg);
+    	EventLogging.info(this.nodeName + " Sending MR_JOB_COMPLETE to master node " + String.valueOf(masterID));
+ 	   PeerNodeMessageType msg = new PeerNodeMessageType();
+ 	   msg.messageID = PeerNodeMessageType.MR_JOB_COMPLETE;
+ 	   msg.destNode = this.masterNodeID;
+ 	   msg.mrJobID = jobID;
+ 	   msg.result = results;
+ 	   msg.dataChunkID = dataChunkID;
+ 	   
+    	if(this.masterNodeID != 0)
+    	{
+    	   msg.destNode = this.masterNodeID;
+    	   this.commsMgr.SendMsg(msg);
+    	}
+    	else
+    	{
+    		while(this.masterNodeID == 0)
+    		{
+               EventLogging.info(this.nodeName + " Waiting for new master node ID to be set");
+    		   try 
+    		   {
+				Thread.sleep(500);
+			   } 
+    		   catch (InterruptedException e) 
+    		   {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		  	   }	
+    		}
+    		msg.destNode = this.masterNodeID;
+     	    this.commsMgr.SendMsg(msg);
+    	}
     }
     
     //This method allows the master to tell the job client the work is complete
@@ -593,12 +619,14 @@ public class MRProtocolHandler
     
     //This method allows the master to send out the job assignment list to all nodes
     //such that if master dies, worker can take over
-    public void SendOutJobAssignmentList(ArrayList<JobSubmission> jobAssignments)
+    public void SendOutJobAssignmentList(ArrayList<JobSubmission> jobAssignments, int latestJobID, Hashtable<Integer, Integer> jobClientTable)
     {
     	PeerNodeMessageType msg = new PeerNodeMessageType();
     	msg.messageID = PeerNodeMessageType.PROPOGATE_JOB_ASSIGNMENTS;
     	msg.destNode = PeerNodeMessageType.BROADCAST_DEST_ID;
     	msg.jobAssignment = jobAssignments;
+    	msg.latestJobID = latestJobID;
+    	msg.jobClientMap = jobClientTable;
     	this.commsMgr.SendMsg(msg);
     }
     

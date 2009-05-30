@@ -81,7 +81,19 @@ public class Master extends Thread
     	this.mrHandler.AssignWorkersJob(jobID, words, wordToSearch, jobClientID);
     	
     	//Send out assignment list to all nodes 
-    	this.mrHandler.SendOutJobAssignmentList(this.jobAssignments);
+    	this.mrHandler.SendOutJobAssignmentList(this.jobAssignments,jobID, jobClientMap);
+    }
+    
+    //This method is used when the master propogates job assignments to all other workers
+    //The worker saves this just in case they are promoted to a master
+    public void saveJobAssignments(PeerNodeMessageType msg)
+    {
+    	EventLogging.debug("Worker " + this.nodeID + " has saved master job assignment");
+    	jobAssignments = msg.jobAssignment;
+    	
+    	jobID = msg.latestJobID;
+    	
+    	jobClientMap = msg.jobClientMap;
     }
 
     /*
@@ -127,7 +139,7 @@ public class Master extends Thread
 			//propogate this result to all other workers so they can update their
 			//job assignment table
     		
-    		this.mrHandler.SendOutJobAssignmentList(this.jobAssignments);    		
+    		this.mrHandler.SendOutJobAssignmentList(this.jobAssignments, jobID, jobClientMap);    		
     	}
 
     }
@@ -154,7 +166,7 @@ public class Master extends Thread
     			
     			//send out the new jobAssignments data structure to all nodes
     			jobAssignments.get(i).workerNodeID = newWorkerNodeID;
-    			mrHandler.SendOutJobAssignmentList(jobAssignments);
+    			mrHandler.SendOutJobAssignmentList(jobAssignments, jobID, jobClientMap);
     			
     			//send out a message to the new worker to tell him to grab the dataset
     			mrHandler.AssignNewWorkerJob(job.jobID, newWorkerNodeID, job.jobClientID, job.dataChunkID, job.dataSetBlockNumBeginIndex, job.dataSetBlockNumEndIndex);
